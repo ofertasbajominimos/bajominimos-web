@@ -1,0 +1,1 @@
+window.__dia("2026-10-26",[{"a":"B0GH1744CB","t":"00:00","n":"Juego de herramientas infantil 3 en 1 con sonidos y luces: desbrozadora, soplador y cortasetos de juguete","i":"https://m.media-amazon.com/images/I/5180COy2X7L.jpg","p":28.49,"b":38.99,"d":27.0,"c":"otros","u":"https://amzlink.to/az06HlrtwPvAz","mi":"hist","rs":["MÍNIMO HISTÓRICO"]}]);
