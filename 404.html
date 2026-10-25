@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ofertas Bajo Mínimos</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/assets/estilo.css">
+</head>
+<body>
+<header><div class="contenedor barra">
+  <a class="marca" href="/"><img src="/assets/logo.png" alt=""><span>Ofertas Bajo Mínimos</span></a>
+</div></header>
+<main class="contenedor" style="max-width:640px;padding-top:48px;padding-bottom:60px;text-align:center;line-height:1.6">
+<h1 id="t">Página no encontrada</h1>
+<p id="p">Esta dirección no existe. Puedes ver todas las ofertas en la portada.</p>
+<p><a class="ver grande" href="/">Ver todas las ofertas</a></p>
+</main>
+<script>
+(function () {
+  if (!/^\/oferta\/[A-Z0-9]{10}\.html$/.test(location.pathname)) return;
+  document.getElementById("t").textContent = "Preparando la ficha…";
+  document.getElementById("p").textContent = "Esta oferta se acaba de publicar y su ficha está terminando de subirse. Esta página se recarga sola en cuanto esté lista (suele tardar un par de minutos).";
+  var intentos = 0;
+  (function probar() {
+    if (++intentos > 60) {
+      document.getElementById("t").textContent = "La ficha aún no está lista";
+      document.getElementById("p").textContent = "Vuelve a intentarlo en unos minutos, o mira todas las ofertas en la portada.";
+      return;
+    }
+    fetch(location.pathname + "?r=" + Date.now(), {cache: "no-store"}).then(function (r) {
+      if (r.ok) location.reload(); else setTimeout(probar, 5000);
+    }).catch(function () { setTimeout(probar, 5000); });
+  })();
+})();
+</script>
+<script data-goatcounter="https://bajominimos.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><script>document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a.ver');if(!a||!window.goatcounter||!goatcounter.count)return;var o=(typeof OFERTA!=='undefined')?OFERTA:{};var id=a.dataset.a||o.a||'';goatcounter.count({path:'ir/'+id,title:a.dataset.n||o.n||id,event:true})},true)</script>
+</body>
+</html>
