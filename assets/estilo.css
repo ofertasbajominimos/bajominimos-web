@@ -1,0 +1,126 @@
+
+:root{--bg:#f4f6fb;--panel:#ffffff;--panel2:#eef1f8;--texto:#14213d;--suave:#5b6784;--linea:#dfe4f0;--azul:#17366b;--azul2:#2f6bff;
+  --oro:#e89a00;--verde:#0a8f54;--rojo:#d6264a;--sombra:0 1px 2px rgba(20,33,61,.06),0 6px 18px rgba(20,33,61,.07)}
+:root[data-tema="oscuro"]{--bg:#0b1020;--panel:#141b2e;--panel2:#1b2440;--texto:#eef2ff;--suave:#9aa6c7;--linea:#26304f;--azul:#7aa2ff;--azul2:#4d7dff;
+  --oro:#ffb703;--verde:#34d399;--rojo:#ff5c7a;--sombra:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--texto);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+.contenedor{max-width:1240px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--linea)}
+.barra{display:flex;align-items:center;gap:12px;height:62px}
+.marca{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.marca img{width:34px;height:34px;border-radius:9px}
+.buscador{flex:1;max-width:460px;margin-left:auto;position:relative}
+.buscador input{width:100%;height:40px;border-radius:12px;border:1px solid var(--linea);background:var(--panel);padding:0 14px 0 38px;outline:none}
+.buscador input:focus{border-color:var(--azul2);box-shadow:0 0 0 3px color-mix(in srgb,var(--azul2) 22%,transparent)}
+.buscador svg{position:absolute;left:12px;top:11px;width:18px;height:18px;fill:none;stroke:var(--suave);stroke-width:2}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--linea);background:var(--panel);cursor:pointer;font-weight:650}
+.btn:hover{border-color:var(--azul2)}
+.btn.tg{background:#229ed9;border-color:#229ed9;color:#fff}
+.btn.tg:hover{filter:brightness(1.07)}
+.btn.icono{width:40px;padding:0}
+.hero{padding:34px 0 18px}
+.hero h1{margin:0 0 8px;font-size:clamp(26px,4.2vw,42px);line-height:1.1;letter-spacing:-.02em}
+.hero h1 span{color:var(--azul2)}
+.hero p{margin:0 0 18px;color:var(--suave);max-width:640px;font-size:16px}
+.cifras{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px}
+.cifras div{display:flex;flex-direction:column}
+.cifras b{font-size:24px;letter-spacing:-.01em}
+.cifras small{color:var(--suave)}
+.filtros{display:flex;flex-direction:column;gap:12px;padding:14px 0 6px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chip{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--linea);background:var(--panel);cursor:pointer;font-weight:600;white-space:nowrap}
+.chip small{color:var(--suave);font-weight:500}
+.chip.on{background:var(--azul2);border-color:var(--azul2);color:#fff}
+.chip.on small{color:#e6edff}
+.controles{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controles select,.controles label.sw{height:38px;border-radius:10px;border:1px solid var(--linea);background:var(--panel);padding:0 10px}
+.controles label.sw{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.contador{margin-left:auto;color:var(--suave);font-size:14px}
+.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;padding:12px 0 20px}
+.tarjeta{position:relative;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--linea);border-radius:16px;overflow:hidden;box-shadow:var(--sombra);transition:transform .15s,border-color .15s}
+.tarjeta:hover{transform:translateY(-3px);border-color:var(--azul2)}
+.foto{position:relative;aspect-ratio:1/1;background:#fff;display:flex;align-items:center;justify-content:center}
+.foto img{max-width:88%;max-height:88%;object-fit:contain}
+.dto{position:absolute;top:10px;left:10px;background:var(--rojo);color:#fff;font-weight:800;font-size:14px;padding:4px 9px;border-radius:9px}
+.etq{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.etq span{background:var(--azul);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:7px;letter-spacing:.02em}
+:root[data-tema="oscuro"] .etq span{color:#0b1020}
+.etq .oro{background:var(--oro);color:#1d1400}
+.cuerpo{display:flex;flex-direction:column;gap:8px;padding:13px 14px 14px;flex:1}
+.meta{display:flex;justify-content:space-between;gap:8px;color:var(--suave);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.titulo{font-weight:650;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:4.2em}
+.precios{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.ahora{font-size:25px;font-weight:850;letter-spacing:-.02em}
+.antes{color:var(--suave);text-decoration:line-through}
+.aviso{font-size:13px;color:var(--suave);background:var(--panel2);border-radius:9px;padding:6px 9px}
+.aviso.cupon{color:var(--verde);font-weight:650}
+.pie{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:4px}
+.hora{color:var(--suave);font-size:12px}
+.ver{background:var(--azul2);color:#fff;font-weight:750;border-radius:11px;padding:9px 14px;white-space:nowrap}
+.ver:hover{filter:brightness(1.08)}
+.tarjeta.agotada .foto img{opacity:.35;filter:grayscale(1)}
+.tarjeta.agotada .ahora{color:var(--suave);text-decoration:line-through}
+.tarjeta.agotada .ver{background:var(--panel2);color:var(--suave)}
+.estado{position:absolute;left:0;right:0;bottom:0;text-align:center;font-weight:800;font-size:12px;letter-spacing:.05em;padding:6px;background:var(--rojo);color:#fff}
+.estado.sube{background:#7a8399}
+.estado.baja{background:var(--verde)}
+.comprobado{font-size:12px;color:var(--suave)}
+.mas{display:flex;justify-content:center;padding:6px 0 34px}
+.vacio{padding:60px 0;text-align:center;color:var(--suave)}
+.cta{margin:10px 0 28px;padding:22px;border-radius:18px;background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+:root[data-tema="oscuro"] .cta{color:#fff;background:linear-gradient(135deg,#16306a,#2f6bff)}
+.cta h2{margin:0 0 4px;font-size:22px}
+.cta p{margin:0;opacity:.9}
+.cta .btn{background:#fff;color:#14213d;border-color:#fff}
+footer{border-top:1px solid var(--linea);padding:24px 0 40px;color:var(--suave);font-size:13px}
+footer p{margin:0 0 8px;max-width:820px}
+@media(max-width:640px){.marca span{display:none}.buscador{max-width:none}.rejilla{grid-template-columns:repeat(2,1fr);gap:10px}.ahora{font-size:21px}
+  .cuerpo{padding:10px}.titulo{font-size:14px}.hero{padding-top:22px}.btn.tg span{display:none}.cifras{gap:18px}
+  .controles{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.controles>*{flex:none}.contador{margin-left:0}
+  .hero p{font-size:15px}.hero{padding-bottom:6px}.aviso{font-size:12px}.pie{flex-wrap:wrap}.ver{padding:8px 12px}}
+@media(max-width:340px){.rejilla{grid-template-columns:1fr}}
+
+.volver{display:inline-block;margin:18px 0 12px;color:var(--suave);font-weight:600}
+.volver:hover{color:var(--azul2)}
+.ficha{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:28px;align-items:start;padding:6px 0 22px}
+.ficha-foto{position:relative;background:#fff;border-radius:18px;border:1px solid var(--linea);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--sombra)}
+.ficha-foto img{max-width:90%;max-height:90%;object-fit:contain}
+.ficha-foto.terminada img{opacity:.35;filter:grayscale(1)}
+.ficha-datos h1{margin:6px 0 10px;font-size:clamp(20px,2.6vw,28px);line-height:1.2;letter-spacing:-.01em}
+.etiquetas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.etiquetas span{background:var(--azul);color:#fff;font-size:12px;font-weight:700;padding:4px 9px;border-radius:8px}
+:root[data-tema="oscuro"] .etiquetas span{color:#0b1020}
+.etiquetas .oro{background:var(--oro);color:#1d1400}
+.bloque-precio{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:14px 18px;margin:6px 0 12px;box-shadow:var(--sombra)}
+.bloque-precio .ahora{font-size:38px}
+.ahorras{color:var(--verde);font-weight:700;margin-top:2px}
+.ficha-datos .aviso{margin-bottom:8px}
+.acciones{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.ver.grande{display:inline-flex;align-items:center;height:44px;padding:0 22px;font-size:16px}
+.panel{background:var(--panel);border:1px solid var(--linea);border-radius:18px;padding:18px;margin:6px 0 26px;box-shadow:var(--sombra)}
+.panel-cab{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.panel h2,.rel-titulo{margin:0;font-size:20px}
+.rel-titulo{margin:6px 0 4px}
+.rangos{display:flex;gap:8px}
+.resumen{margin:10px 0 6px;color:var(--suave)}
+.grafica{position:relative;margin-top:6px}
+.grafica svg{width:100%;height:300px;display:block;touch-action:none}
+.linea{fill:none;stroke:var(--azul2);stroke-width:2.2}
+.media{stroke:var(--suave);stroke-width:1;stroke-dasharray:5 5}
+.rej{stroke:var(--linea);stroke-width:1}
+.eje{fill:var(--suave);font-size:12px}
+.pmin{fill:var(--verde);stroke:var(--panel);stroke-width:2}
+.phoy{fill:var(--rojo);stroke:var(--panel);stroke-width:2}
+.cursor{stroke:var(--suave);stroke-width:1}
+.tip{position:absolute;top:6px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:6px 10px;font-size:13px;pointer-events:none;text-align:center;white-space:nowrap}
+.cifras4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.cifras4 div{background:var(--panel2);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column}
+.cifras4 small{color:var(--suave)}
+.cifras4 b{font-size:18px}
+.nota{margin:12px 0 0;color:var(--suave);font-size:13px}
+.ficha-foto .estado{position:absolute;left:0;right:0;bottom:0}
+@media(max-width:760px){.ficha{grid-template-columns:1fr}.cifras4{grid-template-columns:repeat(2,1fr)}.bloque-precio .ahora{font-size:32px}}
