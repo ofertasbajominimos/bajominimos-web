@@ -7,7 +7,7 @@
 <meta name="description" content="Las mejores ofertas de Amazon, a su precio más bajo. Todas las ofertas que publicamos en Telegram, con buscador y filtros.">
 <meta property="og:title" content="Ofertas Bajo Mínimos">
 <meta property="og:description" content="Las mejores ofertas de Amazon, a su precio más bajo">
-<meta property="og:image" content="https://bajominimos.es/assets/logo.png">
+<meta property="og:image" content="https://bajominimos.es/assets/logo-completo.png">
 <meta property="og:url" content="https://bajominimos.es/">
 <link rel="canonical" href="https://bajominimos.es/">
 <link rel="icon" href="assets/logo.png">
@@ -25,7 +25,18 @@ button,input,select{font:inherit;color:inherit}
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--linea)}
 .barra{display:flex;align-items:center;gap:12px;height:62px}
 .marca{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
-.marca img{width:44px;height:44px;border-radius:11px;box-shadow:0 0 0 1px var(--linea)}
+.marca img{width:52px;height:52px;border-radius:13px;box-shadow:0 0 0 1px var(--linea)}
+main .hero{display:grid;grid-template-columns:minmax(200px,330px) 1fr;gap:44px;align-items:center;margin:18px 0 6px;padding:34px 40px;border-radius:28px;color:#fff;
+  background:radial-gradient(circle at 85% 0%,rgba(255,150,40,.16),transparent 45%),linear-gradient(135deg,#091a45,#12306b)}
+main .hero .hero-logo{width:100%;max-width:330px;aspect-ratio:1;border-radius:26px;box-shadow:0 14px 40px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14)}
+main .hero h1{color:#fff;font-size:clamp(30px,4.6vw,54px);line-height:1.08}
+main .hero h1 span{background:linear-gradient(90deg,#ffc23d,#ff7a2f);-webkit-background-clip:text;background-clip:text;color:transparent}
+main .hero p{color:#c3cdf0;font-size:17px;max-width:620px}
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,194,61,.5);background:rgba(255,194,61,.1);color:#ffd36b;border-radius:999px;padding:7px 15px;font-weight:650;font-size:14px}
+.pill.tg{border-color:rgba(90,175,255,.55);background:rgba(90,175,255,.1);color:#86c9ff}
+main .hero .cifras b{color:#ffc23d;font-size:34px}main .hero .cifras small{color:#aab6e0}
+@media(max-width:820px){main .hero{grid-template-columns:1fr;gap:20px;padding:22px 20px;text-align:left}main .hero .hero-logo{max-width:150px}main .hero p{font-size:15px}}
 :root[data-tema="oscuro"] .marca img{box-shadow:0 0 0 1px rgba(255,255,255,.28),0 0 14px rgba(77,125,255,.35)}
 .buscador{flex:1;max-width:460px;margin-left:auto;position:relative}
 .buscador input{width:100%;height:40px;border-radius:12px;border:1px solid var(--linea);background:var(--panel);padding:0 14px 0 38px;outline:none}
@@ -111,6 +122,9 @@ footer p{margin:0 0 8px;max-width:820px}
 
 <main class="contenedor">
   <section class="hero">
+   <img class="hero-logo" src="assets/logo-completo.png" alt="Ofertas Bajo Mínimos" width="330" height="330">
+   <div>
+    <div class="pills"><span class="pill">🔥 Mínimos históricos</span><a class="pill tg" href="https://t.me/ofertasbajominimos" target="_blank" rel="noopener">✈ Telegram</a></div>
     <h1>Las mejores ofertas de Amazon, a su precio más bajo<br><span>en cuanto salen</span></h1>
     <p>Aquí está todo lo que publicamos en nuestro canal de Telegram: tecnología, moda, hogar, belleza, deporte y más. Con el precio de antes, el de ahora y cuándo lo publicamos.</p>
     <div class="cifras">
@@ -118,6 +132,7 @@ footer p{margin:0 0 8px;max-width:820px}
       <div><b id="n-max">–</b><small>descuento máximo hoy</small></div>
       <div><b id="n-act">–</b><small>última actualización</small></div>
     </div>
+   </div>
   </section>
 
   <section class="filtros">
