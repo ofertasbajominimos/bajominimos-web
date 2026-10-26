@@ -1,0 +1,1 @@
+window.__dia("2026-10-27",[{"a":"B0DG36WZVB","t":"00:39","n":"Hydro Flask Standard Flex Cap 621 ml (21 oz) botella de acero inoxidable Trillium","i":"https://m.media-amazon.com/images/I/21fJtEX2m2L.jpg","p":27.97,"b":39.95,"d":30.0,"c":"hogar","u":"https://amzlink.to/az0ovhImpLhg7","m":"Hydro Flask","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"]}]);
