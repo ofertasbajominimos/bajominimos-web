@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0C6XZGVJV","t":"12:17","n":"Einhell boquilla de ranura para aspiradora de cenizas, 18 cm, diámetro 36 mm, aluminio","i":"https://m.media-amazon.com/images/I/210Csv5ke7L.jpg","p":11.18,"b":16.41,"d":32.0,"c":"hogar","u":"https://amzlink.to/az0Bszfy1h3EF","m":"Einhell","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,10.75],[5,12.04],[7,11.43],[10,11.41],[11,11.4],[14,11.35],[15,11.36],[17,11.31],[23,11.24],[24,11.6],[28,11.54],[31,11.51],[35,11.37],[37,11.27],[39,11.23],[41,11.22],[42,11.29],[43,11.31],[44,11.3],[45,11.28],[47,11.3],[51,25.7],[135,11.8],[142,26.11],[163,26.1],[164,13.06],[202,12.54],[206,12.53],[210,12.35],[216,12.3],[222,12.24],[227,12.16],[234,16.41],[359,11.18]]}};
+const OFERTA = {"a":"B0C6XZGVJV","t":"12:17","n":"Einhell boquilla de ranura para aspiradora de cenizas, 18 cm, diámetro 36 mm, aluminio","i":"https://m.media-amazon.com/images/I/210Csv5ke7L.jpg","p":11.18,"b":16.41,"d":32.0,"c":"hogar","u":"https://amzlink.to/az0Bszfy1h3EF","m":"Einhell","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":11.18,"ba":16.41,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,10.75],[5,12.04],[7,11.43],[10,11.41],[11,11.4],[14,11.35],[15,11.36],[17,11.31],[23,11.24],[24,11.6],[28,11.54],[31,11.51],[35,11.37],[37,11.27],[39,11.23],[41,11.22],[42,11.29],[43,11.31],[44,11.3],[45,11.28],[47,11.3],[51,25.7],[135,11.8],[142,26.11],[163,26.1],[164,13.06],[202,12.54],[206,12.53],[210,12.35],[216,12.3],[222,12.24],[227,12.16],[234,16.41],[359,11.18]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

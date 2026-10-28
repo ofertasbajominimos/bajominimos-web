@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FH7F99VG","t":"23:46","n":"G.I. Joe Classified Series #191 Guardia Real de Cobra-La, figura de acción 15 cm","i":"https://m.media-amazon.com/images/I/51zd3L-fuyL.jpg","p":29.99,"b":42.34,"d":29.0,"c":"otros","u":"https://amzlink.to/az0iCmXSPP2z8","mi":"hist","ok":1,"tc":"2026-10-27T06:52:03","pa":29.99,"ba":42.34,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2026-02-24","s":[[0,42.99],[30,42.34],[36,42.99],[40,42.34],[73,49.26],[78,42.34],[78,42.99],[95,49.26],[110,56.98],[110,58.88],[116,51.46],[118,51.4],[118,51.39],[118,51.37],[120,50.45],[122,42.34],[141,42.99],[144,42.34],[149,42.99],[151,42.34],[152,42.99],[152,42.34],[159,42.99],[160,42.34],[160,42.99],[162,42.34],[167,42.99],[169,42.34],[209,42.33],[241,29.99]]}};
+const OFERTA = {"a":"B0FH7F99VG","t":"23:46","n":"G.I. Joe Classified Series #191 Guardia Real de Cobra-La, figura de acción 15 cm","i":"https://m.media-amazon.com/images/I/51zd3L-fuyL.jpg","p":29.99,"b":42.34,"d":29.0,"c":"otros","u":"https://amzlink.to/az0iCmXSPP2z8","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":29.99,"ba":42.34,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2026-02-24","s":[[0,42.99],[30,42.34],[36,42.99],[40,42.34],[73,49.26],[78,42.34],[78,42.99],[95,49.26],[110,56.98],[110,58.88],[116,51.46],[118,51.4],[118,51.39],[118,51.37],[120,50.45],[122,42.34],[141,42.99],[144,42.34],[149,42.99],[151,42.34],[152,42.99],[152,42.34],[159,42.99],[160,42.34],[160,42.99],[162,42.34],[167,42.99],[169,42.34],[209,42.33],[241,29.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

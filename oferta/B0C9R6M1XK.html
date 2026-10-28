@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0C9R6M1XK","t":"07:11","n":"Nike M NP DF Tight LS Mock Vest para hombre","i":"https://m.media-amazon.com/images/I/31vzoz-3r9L.jpg","p":19.95,"b":39.99,"d":50.0,"c":"moda","u":"https://amzlink.to/az0JeZhOYZcoC","m":"Nike","mi":"hist","ta":"M, L, XXL","av":["Tallas al mismo precio: M, L, XXL"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,33.0],[24,29.99],[36,31.95],[42,33.0],[50,35.19],[56,33.95],[63,35.19],[67,35.95],[71,39.99],[73,39.95],[82,39.99],[85,39.95],[139,35.95],[146,39.95],[150,39.93],[150,39.7],[151,39.95],[151,39.93],[151,39.2],[151,39.1],[152,38.9],[152,39.0],[152,38.9],[153,39.0],[153,35.95],[163,35.93],[163,35.55],[164,35.15],[164,34.75],[165,35.15],[169,34.95],[169,35.35],[170,35.15],[173,34.95],[176,35.15],[177,34.95],[178,35.15],[179,34.95],[180,35.15],[181,34.95],[182,35.15],[182,34.95],[190,35.15],[194,35.35],[194,35.15],[195,34.95],[196,35.15],[198,34.95],[200,35.15],[201,35.35],[204,35.15],[207,35.35],[209,34.95],[210,35.15],[214,35.55],[215,35.15],[222,34.95],[222,35.15],[224,35.35],[226,35.15],[228,34.95],[230,35.15],[232,34.95],[233,34.75],[235,34.95],[241,35.15],[253,34.95],[259,29.95],[304,37.62],[307,41.99],[310,41.55],[311,33.77],[314,31.95],[325,35.95],[337,38.62],[338,38.95],[346,38.75],[350,35.95],[355,35.93],[355,35.29],[361,32.34],[364,19.95]]}};
+const OFERTA = {"a":"B0C9R6M1XK","t":"07:11","n":"Nike M NP DF Tight LS Mock Vest para hombre","i":"https://m.media-amazon.com/images/I/31vzoz-3r9L.jpg","p":19.95,"b":39.99,"d":50.0,"c":"moda","u":"https://amzlink.to/az0JeZhOYZcoC","m":"Nike","mi":"hist","ta":"M, L, XXL","ok":1,"tc":"2026-10-28T15:52:20","pa":19.95,"ba":39.99,"av":["Tallas al mismo precio: M, L, XXL"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,33.0],[24,29.99],[36,31.95],[42,33.0],[50,35.19],[56,33.95],[63,35.19],[67,35.95],[71,39.99],[73,39.95],[82,39.99],[85,39.95],[139,35.95],[146,39.95],[150,39.93],[150,39.7],[151,39.95],[151,39.93],[151,39.2],[151,39.1],[152,38.9],[152,39.0],[152,38.9],[153,39.0],[153,35.95],[163,35.93],[163,35.55],[164,35.15],[164,34.75],[165,35.15],[169,34.95],[169,35.35],[170,35.15],[173,34.95],[176,35.15],[177,34.95],[178,35.15],[179,34.95],[180,35.15],[181,34.95],[182,35.15],[182,34.95],[190,35.15],[194,35.35],[194,35.15],[195,34.95],[196,35.15],[198,34.95],[200,35.15],[201,35.35],[204,35.15],[207,35.35],[209,34.95],[210,35.15],[214,35.55],[215,35.15],[222,34.95],[222,35.15],[224,35.35],[226,35.15],[228,34.95],[230,35.15],[232,34.95],[233,34.75],[235,34.95],[241,35.15],[253,34.95],[259,29.95],[304,37.62],[307,41.99],[310,41.55],[311,33.77],[314,31.95],[325,35.95],[337,38.62],[338,38.95],[346,38.75],[350,35.95],[355,35.93],[355,35.29],[361,32.34],[364,19.95]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

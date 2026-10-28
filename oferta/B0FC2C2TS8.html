@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FC2C2TS8","t":"09:50","n":"ARIEL Detergente Lavadora Líquido Brisa Limpia, 75 lavados (pack de 3)","i":"https://m.media-amazon.com/images/I/41tE84l2pmL.jpg","p":17.09,"b":27.57,"d":38.0,"c":"hogar","u":"https://amzlink.to/az0ck81SLM1Xr","mi":"90","ok":1,"tc":"2026-10-27T06:52:03","pa":17.99,"ba":27.57,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-25","serie":{"d0":"2025-10-25","s":[[0,26.97],[5,20.13],[21,26.97],[26,22.37],[26,22.39],[27,22.37],[30,22.39],[32,22.37],[34,22.39],[34,22.37],[35,22.39],[36,22.37],[37,22.39],[38,22.37],[39,19.99],[44,29.97],[59,28.17],[66,27.87],[67,29.97],[89,26.97],[106,29.97],[107,17.99],[112,17.09],[112,17.99],[112,17.09],[113,17.99],[113,17.09],[113,17.99],[122,27.57],[129,29.97],[152,17.99],[165,26.97],[208,23.97],[219,17.99],[232,23.97],[243,26.97],[247,27.57],[254,26.97],[267,27.57],[276,17.99],[286,27.57],[324,17.99],[335,27.57],[362,17.99]]}};
+const OFERTA = {"a":"B0FC2C2TS8","t":"09:50","n":"ARIEL Detergente Lavadora Líquido Brisa Limpia, 75 lavados (pack de 3)","i":"https://m.media-amazon.com/images/I/41tE84l2pmL.jpg","p":17.09,"b":27.57,"d":38.0,"c":"hogar","u":"https://amzlink.to/az0ck81SLM1Xr","mi":"90","ok":1,"tc":"2026-10-27T09:52:02","pa":17.99,"ba":27.57,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-25","serie":{"d0":"2025-10-25","s":[[0,26.97],[5,20.13],[21,26.97],[26,22.37],[26,22.39],[27,22.37],[30,22.39],[32,22.37],[34,22.39],[34,22.37],[35,22.39],[36,22.37],[37,22.39],[38,22.37],[39,19.99],[44,29.97],[59,28.17],[66,27.87],[67,29.97],[89,26.97],[106,29.97],[107,17.99],[112,17.09],[112,17.99],[112,17.09],[113,17.99],[113,17.09],[113,17.99],[122,27.57],[129,29.97],[152,17.99],[165,26.97],[208,23.97],[219,17.99],[232,23.97],[243,26.97],[247,27.57],[254,26.97],[267,27.57],[276,17.99],[286,27.57],[324,17.99],[335,27.57],[362,17.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B086WRS523","t":"07:26","n":"Gillette Sensor3 Sensitive Maquinillas De Afeitar Desechables Para Hombre Con Banda Lubricante Con Un Toque De Aloe Vera, 5 unidades","i":"https://m.media-amazon.com/images/I/51mnR9iYg9L.jpg","p":23.74,"b":34.99,"d":32.0,"c":"belleza","u":"https://www.amazon.es/dp/B086WRS523?tag=bajominimos-21&th=1&psc=1","ok":1,"tc":"2026-10-23T22:52:15","pa":24.99,"ba":34.99,"dia":"2026-10-22"};
+const OFERTA = {"a":"B086WRS523","t":"07:26","n":"Gillette Sensor3 Sensitive Maquinillas De Afeitar Desechables Para Hombre Con Banda Lubricante Con Un Toque De Aloe Vera, 5 unidades","i":"https://m.media-amazon.com/images/I/51mnR9iYg9L.jpg","p":23.74,"b":34.99,"d":32.0,"c":"belleza","u":"https://www.amazon.es/dp/B086WRS523?tag=bajominimos-21&th=1&psc=1","dia":"2026-10-22"};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

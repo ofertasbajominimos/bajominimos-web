@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B089Z8473B","t":"09:31","n":"PUMA Sudadera Mujer Ess Logo Crew TR","i":"https://m.media-amazon.com/images/I/31J6rvM1LZL.jpg","p":19.8,"b":49.95,"d":60.0,"c":"moda","u":"https://amzlink.to/az0MYcSuoBkcX","m":"Puma","mi":"90","ta":"XL","av":["Talla: XL"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,49.95],[0,27.74],[4,24.97],[5,22.47],[6,49.95],[10,25.97],[11,26.47],[16,23.82],[18,21.44],[19,49.95],[25,23.48],[30,21.13],[32,19.02],[34,17.12],[37,23.4],[39,23.57],[44,21.21],[46,19.09],[49,17.85],[50,17.46],[51,17.5],[51,17.85],[55,61.97],[56,49.95],[59,23.98],[60,24.29],[61,24.6],[62,24.91],[63,24.97],[65,22.47],[68,20.22],[69,16.8],[71,49.95],[81,26.97],[84,49.95],[86,33.47],[93,49.95],[99,39.19],[102,36.84],[109,33.51],[111,30.16],[115,28.48],[121,49.95],[128,21.29],[137,32.77],[139,29.49],[141,49.95],[143,50.0],[152,49.95],[154,50.0],[155,44.96],[158,40.46],[161,35.0],[170,36.41],[174,33.62],[176,49.95],[180,50.0],[182,26.13],[196,49.95],[198,42.0],[200,37.8],[202,35.7],[206,32.89],[207,30.94],[212,49.95],[224,36.96],[225,33.26],[230,29.93],[233,30.11],[240,32.79],[250,29.51],[253,26.56],[256,24.79],[259,20.93],[260,22.3],[268,49.95],[268,41.96],[271,37.76],[277,33.23],[280,26.92],[283,49.95],[286,24.23],[289,20.5],[294,49.95],[299,36.46],[307,30.99],[310,27.89],[313,25.1],[316,20.33],[319,22.13],[325,49.95],[328,37.96],[331,34.16],[334,31.95],[334,32.21],[341,49.95],[347,47.45],[350,43.65],[353,39.72],[355,35.75],[359,32.25],[364,19.8]]}};
+const OFERTA = {"a":"B089Z8473B","t":"09:31","n":"PUMA Sudadera Mujer Ess Logo Crew TR","i":"https://m.media-amazon.com/images/I/31J6rvM1LZL.jpg","p":19.8,"b":49.95,"d":60.0,"c":"moda","u":"https://amzlink.to/az0MYcSuoBkcX","m":"Puma","mi":"90","ta":"XL","ok":1,"tc":"2026-10-28T15:52:20","pa":19.8,"ba":49.95,"av":["Talla: XL"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,49.95],[0,27.74],[4,24.97],[5,22.47],[6,49.95],[10,25.97],[11,26.47],[16,23.82],[18,21.44],[19,49.95],[25,23.48],[30,21.13],[32,19.02],[34,17.12],[37,23.4],[39,23.57],[44,21.21],[46,19.09],[49,17.85],[50,17.46],[51,17.5],[51,17.85],[55,61.97],[56,49.95],[59,23.98],[60,24.29],[61,24.6],[62,24.91],[63,24.97],[65,22.47],[68,20.22],[69,16.8],[71,49.95],[81,26.97],[84,49.95],[86,33.47],[93,49.95],[99,39.19],[102,36.84],[109,33.51],[111,30.16],[115,28.48],[121,49.95],[128,21.29],[137,32.77],[139,29.49],[141,49.95],[143,50.0],[152,49.95],[154,50.0],[155,44.96],[158,40.46],[161,35.0],[170,36.41],[174,33.62],[176,49.95],[180,50.0],[182,26.13],[196,49.95],[198,42.0],[200,37.8],[202,35.7],[206,32.89],[207,30.94],[212,49.95],[224,36.96],[225,33.26],[230,29.93],[233,30.11],[240,32.79],[250,29.51],[253,26.56],[256,24.79],[259,20.93],[260,22.3],[268,49.95],[268,41.96],[271,37.76],[277,33.23],[280,26.92],[283,49.95],[286,24.23],[289,20.5],[294,49.95],[299,36.46],[307,30.99],[310,27.89],[313,25.1],[316,20.33],[319,22.13],[325,49.95],[328,37.96],[331,34.16],[334,31.95],[334,32.21],[341,49.95],[347,47.45],[350,43.65],[353,39.72],[355,35.75],[359,32.25],[364,19.8]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

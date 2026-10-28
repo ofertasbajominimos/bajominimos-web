@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B00IR5X2FU","t":"17:18","n":"Triumph Delicate Doreen N, sujetador sin aros para mujer, negro, talla 95B","i":"https://m.media-amazon.com/images/I/41Bt-gSUrSL.jpg","p":14.33,"b":53.5,"d":73.0,"c":"moda","u":"https://amzlink.to/az0HPDFy0RXHo","m":"Triumph","mi":"90","ta":"95B","av":["Talla: 95B"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,53.5],[11,39.95],[16,53.5],[17,37.95],[21,37.9],[26,36.0],[37,53.5],[83,45.48],[101,53.5],[138,40.12],[141,53.5],[193,38.09],[199,36.65],[209,36.64],[216,53.5],[228,37.04],[231,36.87],[237,29.86],[241,30.95],[245,25.07],[246,23.05],[249,21.37],[255,39.72],[257,35.75],[258,32.18],[272,40.92],[281,39.3],[287,31.83],[293,52.95],[297,23.21],[299,20.89],[302,20.96],[318,20.05],[319,18.73],[328,17.69],[341,52.95],[347,15.92],[352,52.95],[358,15.92],[360,52.95],[361,48.9],[363,14.33]]}};
+const OFERTA = {"a":"B00IR5X2FU","t":"17:18","n":"Triumph Delicate Doreen N, sujetador sin aros para mujer, negro, talla 95B","i":"https://m.media-amazon.com/images/I/41Bt-gSUrSL.jpg","p":14.33,"b":53.5,"d":73.0,"c":"moda","u":"https://amzlink.to/az0HPDFy0RXHo","m":"Triumph","mi":"90","ta":"95B","ok":1,"tc":"2026-10-28T15:52:20","pa":12.9,"ba":53.5,"av":["Talla: 95B"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,53.5],[11,39.95],[16,53.5],[17,37.95],[21,37.9],[26,36.0],[37,53.5],[83,45.48],[101,53.5],[138,40.12],[141,53.5],[193,38.09],[199,36.65],[209,36.64],[216,53.5],[228,37.04],[231,36.87],[237,29.86],[241,30.95],[245,25.07],[246,23.05],[249,21.37],[255,39.72],[257,35.75],[258,32.18],[272,40.92],[281,39.3],[287,31.83],[293,52.95],[297,23.21],[299,20.89],[302,20.96],[318,20.05],[319,18.73],[328,17.69],[341,52.95],[347,15.92],[352,52.95],[358,15.92],[360,52.95],[361,48.9],[363,14.33]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

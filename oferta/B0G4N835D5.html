@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0G4N835D5","t":"15:10","n":"PODERM Tea Tree Sérum reparador de uñas 4-en-1 6 ml","i":"https://m.media-amazon.com/images/I/41mKfLFvrDL.jpg","p":16.14,"b":21.99,"d":27.0,"c":"belleza","u":"https://amzlink.to/az0UyxaPw0jU4","mi":"90","ok":1,"tc":"2026-10-27T06:52:03","pa":16.99,"ba":21.99,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-25","serie":{"d0":"2025-12-16","s":[[0,21.99],[20,19.99],[45,21.99],[53,15.29],[69,21.99],[76,14.5],[90,21.99],[91,20.51],[105,21.99],[169,19.79],[172,21.99],[194,18.8],[208,21.99],[210,18.8],[211,17.86],[224,21.99],[227,20.89],[230,21.99],[232,20.89],[251,21.99],[266,21.9],[267,19.85],[279,18.86],[292,21.9],[295,17.9],[309,21.9],[311,16.99]]}};
+const OFERTA = {"a":"B0G4N835D5","t":"15:10","n":"PODERM Tea Tree Sérum reparador de uñas 4-en-1 6 ml","i":"https://m.media-amazon.com/images/I/41mKfLFvrDL.jpg","p":16.14,"b":21.99,"d":27.0,"c":"belleza","u":"https://amzlink.to/az0UyxaPw0jU4","mi":"90","ok":1,"tc":"2026-10-27T12:52:05","pa":16.99,"ba":21.99,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-25","serie":{"d0":"2025-12-16","s":[[0,21.99],[20,19.99],[45,21.99],[53,15.29],[69,21.99],[76,14.5],[90,21.99],[91,20.51],[105,21.99],[169,19.79],[172,21.99],[194,18.8],[208,21.99],[210,18.8],[211,17.86],[224,21.99],[227,20.89],[230,21.99],[232,20.89],[251,21.99],[266,21.9],[267,19.85],[279,18.86],[292,21.9],[295,17.9],[309,21.9],[311,16.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

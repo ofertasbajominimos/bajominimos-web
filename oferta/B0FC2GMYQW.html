@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FC2GMYQW","t":"14:19","n":"ROKR Puzzle 3D de madera máquina de barril giratorio LQA01 con lanzador de banda de goma","i":"https://m.media-amazon.com/images/I/41XZJXdWjeL.jpg","p":22.78,"b":59.95,"d":62.0,"c":"otros","u":"https://amzlink.to/az0KmtoKzU1ZN","mi":"hist","rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,59.95],[25,47.96],[35,59.95],[64,56.95],[80,45.56],[93,39.8],[95,59.95],[103,41.96],[119,59.95],[136,43.28],[140,59.95],[179,39.86],[184,35.97],[195,34.17],[196,35.97],[200,59.95],[202,32.46],[211,34.17],[216,59.95],[229,32.46],[240,59.95],[267,28.3],[272,59.95],[282,35.97],[287,59.95],[294,35.97],[301,59.95],[311,35.97],[314,59.95],[322,35.97],[330,59.95],[339,35.97],[345,59.95],[350,35.97],[359,59.95],[364,22.78]]}};
+const OFERTA = {"a":"B0FC2GMYQW","t":"14:19","n":"ROKR Puzzle 3D de madera máquina de barril giratorio LQA01 con lanzador de banda de goma","i":"https://m.media-amazon.com/images/I/41XZJXdWjeL.jpg","p":22.78,"b":59.95,"d":62.0,"c":"otros","u":"https://amzlink.to/az0KmtoKzU1ZN","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":22.78,"ba":59.95,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,59.95],[25,47.96],[35,59.95],[64,56.95],[80,45.56],[93,39.8],[95,59.95],[103,41.96],[119,59.95],[136,43.28],[140,59.95],[179,39.86],[184,35.97],[195,34.17],[196,35.97],[200,59.95],[202,32.46],[211,34.17],[216,59.95],[229,32.46],[240,59.95],[267,28.3],[272,59.95],[282,35.97],[287,59.95],[294,35.97],[301,59.95],[311,35.97],[314,59.95],[322,35.97],[330,59.95],[339,35.97],[345,59.95],[350,35.97],[359,59.95],[364,22.78]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

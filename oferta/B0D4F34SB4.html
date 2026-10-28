@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0D4F34SB4","t":"09:12","n":"UGREEN Nexode Pro Power Bank 20000mAh USB C PD 100W Qi2 MagSafe","i":"https://m.media-amazon.com/images/I/31i-I98qnlL.jpg","p":99.97,"b":149.99,"d":33.0,"c":"otros","u":"https://amzlink.to/az0YaNBUZudkQ","mi":"hist","ok":1,"tc":"2026-10-27T06:52:03","pa":99.97,"ba":149.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,107.98],[7,125.99],[8,179.99],[42,116.99],[56,179.99],[70,107.99],[84,179.99],[87,149.99],[119,107.99],[134,149.99],[168,99.99],[182,149.99],[259,99.99],[273,149.99],[313,149.0],[315,99.98],[329,124.8],[329,128.38],[331,127.69],[333,124.8],[333,126.24],[334,127.93],[336,129.24],[337,129.96],[339,131.27],[341,130.08],[342,129.4],[345,127.93],[347,129.38],[347,127.75],[348,126.05],[348,129.17],[348,128.3],[348,126.62],[351,127.35],[351,128.15],[352,126.71],[352,128.18],[352,127.04],[353,126.36],[354,127.3],[355,127.98],[355,126.68],[356,125.07],[357,126.48],[357,125.23],[357,126.93],[357,130.27],[357,129.55],[358,127.49],[358,126.32],[358,128.35],[359,124.82],[359,129.59],[360,125.21],[360,126.0],[360,124.38],[360,125.23],[361,124.58],[362,126.23],[362,124.69],[363,126.59],[363,127.32],[364,99.97]]}};
+const OFERTA = {"a":"B0D4F34SB4","t":"09:12","n":"UGREEN Nexode Pro Power Bank 20000mAh USB C PD 100W Qi2 MagSafe","i":"https://m.media-amazon.com/images/I/31i-I98qnlL.jpg","p":99.97,"b":149.99,"d":33.0,"c":"otros","u":"https://amzlink.to/az0YaNBUZudkQ","mi":"hist","ok":1,"tc":"2026-10-28T06:52:14","pa":99.97,"ba":149.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,107.98],[7,125.99],[8,179.99],[42,116.99],[56,179.99],[70,107.99],[84,179.99],[87,149.99],[119,107.99],[134,149.99],[168,99.99],[182,149.99],[259,99.99],[273,149.99],[313,149.0],[315,99.98],[329,124.8],[329,128.38],[331,127.69],[333,124.8],[333,126.24],[334,127.93],[336,129.24],[337,129.96],[339,131.27],[341,130.08],[342,129.4],[345,127.93],[347,129.38],[347,127.75],[348,126.05],[348,129.17],[348,128.3],[348,126.62],[351,127.35],[351,128.15],[352,126.71],[352,128.18],[352,127.04],[353,126.36],[354,127.3],[355,127.98],[355,126.68],[356,125.07],[357,126.48],[357,125.23],[357,126.93],[357,130.27],[357,129.55],[358,127.49],[358,126.32],[358,128.35],[359,124.82],[359,129.59],[360,125.21],[360,126.0],[360,124.38],[360,125.23],[361,124.58],[362,126.23],[362,124.69],[363,126.59],[363,127.32],[364,99.97]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

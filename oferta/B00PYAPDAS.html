@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B00PYAPDAS","t":"10:33","n":"DRASANVI Diur Slim con potasio, magnesio, cola de caballo, vara de oro y diente de león, 250 ml","i":"https://m.media-amazon.com/images/I/31ttQB9viRL.jpg","p":10.61,"b":17.17,"d":38.0,"c":"alimentacion","u":"https://amzlink.to/az020gRao8ANg","mi":"90","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,9.8],[118,8.95],[120,12.85],[137,20.05],[140,13.68],[149,8.69],[163,13.16],[164,14.38],[171,14.19],[172,14.21],[173,14.2],[175,20.05],[183,13.87],[185,17.17],[193,13.67],[194,8.39],[208,17.17],[210,17.9],[227,12.4],[233,17.17],[239,7.95],[256,17.17],[286,13.27],[290,14.0],[294,14.36],[299,15.24],[303,15.43],[310,15.71],[315,16.05],[320,12.49],[337,15.57],[339,15.53],[345,14.77],[351,14.42],[357,14.79],[362,14.83],[364,11.79]]}};
+const OFERTA = {"a":"B00PYAPDAS","t":"10:33","n":"DRASANVI Diur Slim con potasio, magnesio, cola de caballo, vara de oro y diente de león, 250 ml","i":"https://m.media-amazon.com/images/I/31ttQB9viRL.jpg","p":10.61,"b":17.17,"d":38.0,"c":"alimentacion","u":"https://amzlink.to/az020gRao8ANg","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":11.79,"ba":17.17,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,9.8],[118,8.95],[120,12.85],[137,20.05],[140,13.68],[149,8.69],[163,13.16],[164,14.38],[171,14.19],[172,14.21],[173,14.2],[175,20.05],[183,13.87],[185,17.17],[193,13.67],[194,8.39],[208,17.17],[210,17.9],[227,12.4],[233,17.17],[239,7.95],[256,17.17],[286,13.27],[290,14.0],[294,14.36],[299,15.24],[303,15.43],[310,15.71],[315,16.05],[320,12.49],[337,15.57],[339,15.53],[345,14.77],[351,14.42],[357,14.79],[362,14.83],[364,11.79]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

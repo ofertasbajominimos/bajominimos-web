@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B083SZNY59","t":"11:32","n":"Arena gorro de natación unisex II, de secado rápido, suave y resistente","i":"https://m.media-amazon.com/images/I/310Vn64yoRL.jpg","p":7.0,"b":10.0,"d":30.0,"c":"deporte","u":"https://amzlink.to/az0LI17shBKob","m":"Arena","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,8.0],[0,10.0],[3,9.4],[7,10.0],[36,9.4],[38,8.6],[55,8.5],[57,9.58],[63,8.7],[68,8.3],[75,10.0],[80,8.7],[86,8.0],[96,8.86],[104,9.3],[112,10.0],[132,8.49],[139,10.0],[198,8.49],[203,10.0],[205,8.93],[208,8.95],[211,10.0],[224,9.59],[225,10.0],[227,9.57],[231,9.02],[232,9.05],[233,9.08],[235,9.05],[236,9.06],[241,9.05],[241,9.08],[243,9.07],[245,9.17],[250,9.55],[252,10.0],[255,9.53],[256,9.54],[258,9.19],[260,10.0],[260,9.23],[262,9.14],[265,9.07],[271,10.0],[273,9.99],[300,8.59],[305,9.99],[316,10.0],[362,7.0]]}};
+const OFERTA = {"a":"B083SZNY59","t":"11:32","n":"Arena gorro de natación unisex II, de secado rápido, suave y resistente","i":"https://m.media-amazon.com/images/I/310Vn64yoRL.jpg","p":7.0,"b":10.0,"d":30.0,"c":"deporte","u":"https://amzlink.to/az0LI17shBKob","m":"Arena","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":7.0,"ba":10.0,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,8.0],[0,10.0],[3,9.4],[7,10.0],[36,9.4],[38,8.6],[55,8.5],[57,9.58],[63,8.7],[68,8.3],[75,10.0],[80,8.7],[86,8.0],[96,8.86],[104,9.3],[112,10.0],[132,8.49],[139,10.0],[198,8.49],[203,10.0],[205,8.93],[208,8.95],[211,10.0],[224,9.59],[225,10.0],[227,9.57],[231,9.02],[232,9.05],[233,9.08],[235,9.05],[236,9.06],[241,9.05],[241,9.08],[243,9.07],[245,9.17],[250,9.55],[252,10.0],[255,9.53],[256,9.54],[258,9.19],[260,10.0],[260,9.23],[262,9.14],[265,9.07],[271,10.0],[273,9.99],[300,8.59],[305,9.99],[316,10.0],[362,7.0]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

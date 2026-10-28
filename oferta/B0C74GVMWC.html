@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0C74GVMWC","t":"12:26","n":"Puma individualRISE Shorts de punto para hombre, color negro y blanco, ref. 658998","i":"https://m.media-amazon.com/images/I/31Nps1i1zOL.jpg","p":9.0,"b":17.95,"d":50.0,"c":"moda","u":"https://amzlink.to/az0KfcMjurHSf","m":"Puma","mi":"hist","ta":"M","av":["Talla: M"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,14.99],[11,12.99],[17,11.99],[30,12.99],[31,11.99],[37,12.99],[78,13.49],[79,12.99],[99,12.8],[102,12.99],[137,12.29],[137,12.99],[157,12.09],[162,12.99],[166,11.7],[179,10.79],[182,10.8],[183,11.18],[188,10.99],[191,10.14],[198,10.92],[198,10.99],[203,10.53],[207,9.62],[211,9.75],[212,10.42],[213,10.99],[215,10.27],[216,10.32],[217,10.34],[218,10.4],[219,10.99],[220,10.4],[221,10.99],[232,21.69],[234,10.99],[252,21.69],[261,10.99],[308,11.49],[313,10.99],[339,13.49],[343,12.99],[356,11.7],[358,10.53],[362,9.48],[363,9.0]]}};
+const OFERTA = {"a":"B0C74GVMWC","t":"12:26","n":"Puma individualRISE Shorts de punto para hombre, color negro y blanco, ref. 658998","i":"https://m.media-amazon.com/images/I/31Nps1i1zOL.jpg","p":9.0,"b":17.95,"d":50.0,"c":"moda","u":"https://amzlink.to/az0KfcMjurHSf","m":"Puma","mi":"hist","ta":"M","ok":1,"tc":"2026-10-28T15:52:20","pa":12.99,"ba":17.95,"av":["Talla: M"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,14.99],[11,12.99],[17,11.99],[30,12.99],[31,11.99],[37,12.99],[78,13.49],[79,12.99],[99,12.8],[102,12.99],[137,12.29],[137,12.99],[157,12.09],[162,12.99],[166,11.7],[179,10.79],[182,10.8],[183,11.18],[188,10.99],[191,10.14],[198,10.92],[198,10.99],[203,10.53],[207,9.62],[211,9.75],[212,10.42],[213,10.99],[215,10.27],[216,10.32],[217,10.34],[218,10.4],[219,10.99],[220,10.4],[221,10.99],[232,21.69],[234,10.99],[252,21.69],[261,10.99],[308,11.49],[313,10.99],[339,13.49],[343,12.99],[356,11.7],[358,10.53],[362,9.48],[363,9.0]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B01LYT3B59","t":"16:36","n":"Tristar Hervidor de agua 1 L con filtro antical y apagado automático","i":"https://m.media-amazon.com/images/I/21Ps2yNChyL.jpg","p":6.26,"b":9.13,"d":31.0,"c":"hogar","u":"https://amzlink.to/az0SJWdg0a7NX","m":"Tristar","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,9.99],[5,12.3],[9,12.71],[10,9.49],[23,11.99],[63,9.99],[74,13.85],[76,9.99],[77,13.85],[80,13.47],[80,13.7],[84,13.85],[85,13.47],[105,10.49],[120,15.71],[125,16.4],[126,16.62],[127,14.24],[127,14.23],[130,14.24],[150,10.49],[161,13.99],[187,13.1],[189,10.49],[203,11.99],[205,13.1],[226,11.1],[233,9.99],[246,10.05],[253,9.99],[266,10.99],[279,10.74],[284,9.67],[289,8.6],[307,7.52],[309,6.45],[310,18.11],[317,10.04],[323,10.99],[324,18.11],[324,18.43],[324,18.11],[328,18.43],[328,18.11],[329,10.99],[335,10.74],[342,9.67],[349,8.6],[356,7.52],[364,6.45]]}};
+const OFERTA = {"a":"B01LYT3B59","t":"16:36","n":"Tristar Hervidor de agua 1 L con filtro antical y apagado automático","i":"https://m.media-amazon.com/images/I/21Ps2yNChyL.jpg","p":6.26,"b":9.13,"d":31.0,"c":"hogar","u":"https://amzlink.to/az0SJWdg0a7NX","m":"Tristar","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":10.99,"ba":11.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,9.99],[5,12.3],[9,12.71],[10,9.49],[23,11.99],[63,9.99],[74,13.85],[76,9.99],[77,13.85],[80,13.47],[80,13.7],[84,13.85],[85,13.47],[105,10.49],[120,15.71],[125,16.4],[126,16.62],[127,14.24],[127,14.23],[130,14.24],[150,10.49],[161,13.99],[187,13.1],[189,10.49],[203,11.99],[205,13.1],[226,11.1],[233,9.99],[246,10.05],[253,9.99],[266,10.99],[279,10.74],[284,9.67],[289,8.6],[307,7.52],[309,6.45],[310,18.11],[317,10.04],[323,10.99],[324,18.11],[324,18.43],[324,18.11],[328,18.43],[328,18.11],[329,10.99],[335,10.74],[342,9.67],[349,8.6],[356,7.52],[364,6.45]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

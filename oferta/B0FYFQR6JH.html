@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FYFQR6JH","t":"17:38","n":"m-office Cartulina metalizada DIN A4 230gr plata, 125 hojas para manualidades","i":"https://m.media-amazon.com/images/I/4106tMGKLUL.jpg","p":15.39,"b":21.71,"d":29.0,"c":"hogar","u":"https://amzlink.to/az0eMc5d4mVpR","m":"m-office","mi":"hist","ok":1,"tc":"2026-10-27T06:52:03","pa":15.39,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-11-06","s":[[0,99.95],[196,94.3],[212,89.15],[218,84.65],[230,99.95],[241,79.44],[251,72.68],[259,66.01],[264,99.95],[267,66.01],[273,59.41],[280,54.49],[292,49.38],[304,46.36],[307,43.93],[310,39.55],[320,33.59],[324,30.23],[328,24.49],[329,22.04],[332,24.32],[334,21.89],[338,20.5],[341,18.79],[344,17.1],[353,15.39]]}};
+const OFERTA = {"a":"B0FYFQR6JH","t":"17:38","n":"m-office Cartulina metalizada DIN A4 230gr plata, 125 hojas para manualidades","i":"https://m.media-amazon.com/images/I/4106tMGKLUL.jpg","p":15.39,"b":21.71,"d":29.0,"c":"hogar","u":"https://amzlink.to/az0eMc5d4mVpR","m":"m-office","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":15.39,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-11-06","s":[[0,99.95],[196,94.3],[212,89.15],[218,84.65],[230,99.95],[241,79.44],[251,72.68],[259,66.01],[264,99.95],[267,66.01],[273,59.41],[280,54.49],[292,49.38],[304,46.36],[307,43.93],[310,39.55],[320,33.59],[324,30.23],[328,24.49],[329,22.04],[332,24.32],[334,21.89],[338,20.5],[341,18.79],[344,17.1],[353,15.39]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

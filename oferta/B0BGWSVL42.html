@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0BGWSVL42","t":"11:09","n":"Under Armour Sportstyle Left Chest Cut-Off Camiseta Hombre","i":"https://m.media-amazon.com/images/I/41ntXA5yv5L.jpg","p":12.9,"b":30.0,"d":57.0,"c":"moda","u":"https://amzlink.to/az0vciJ5XzXIX","m":"Under Armour","mi":"hist","ta":"S, XXL","av":["Tallas: S, XXL"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,48.31],[0,48.28],[2,48.37],[5,49.49],[10,51.13],[12,50.82],[14,47.21],[16,47.12],[17,47.17],[18,47.21],[18,47.18],[19,47.19],[22,45.7],[23,50.79],[24,38.14],[26,38.16],[28,38.15],[30,37.97],[31,46.35],[34,46.52],[34,46.53],[37,46.15],[37,46.12],[39,46.43],[40,47.18],[42,47.08],[44,47.04],[45,46.93],[46,47.07],[47,47.11],[48,47.3],[50,46.98],[51,47.06],[52,47.29],[54,47.39],[56,47.5],[58,47.6],[59,31.7],[60,31.67],[61,30.0],[73,45.26],[75,30.0],[119,27.38],[123,26.12],[249,27.79],[252,27.82],[254,27.81],[254,27.68],[255,27.69],[256,29.7],[259,29.21],[266,25.77],[275,22.55],[277,24.65],[282,24.84],[288,25.04],[288,22.54],[298,20.49],[302,18.44],[306,16.6],[308,15.34],[310,17.8],[314,29.06],[316,29.65],[318,15.87],[321,14.28],[324,14.47],[325,14.53],[326,16.53],[336,18.34],[342,16.51],[345,15.46],[350,15.55],[354,14.55],[358,13.72],[363,12.9]]}};
+const OFERTA = {"a":"B0BGWSVL42","t":"11:09","n":"Under Armour Sportstyle Left Chest Cut-Off Camiseta Hombre","i":"https://m.media-amazon.com/images/I/41ntXA5yv5L.jpg","p":12.9,"b":30.0,"d":57.0,"c":"moda","u":"https://amzlink.to/az0vciJ5XzXIX","m":"Under Armour","mi":"hist","ta":"S, XXL","ok":1,"tc":"2026-10-28T15:52:20","pa":12.9,"ba":30.0,"av":["Tallas: S, XXL"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,48.31],[0,48.28],[2,48.37],[5,49.49],[10,51.13],[12,50.82],[14,47.21],[16,47.12],[17,47.17],[18,47.21],[18,47.18],[19,47.19],[22,45.7],[23,50.79],[24,38.14],[26,38.16],[28,38.15],[30,37.97],[31,46.35],[34,46.52],[34,46.53],[37,46.15],[37,46.12],[39,46.43],[40,47.18],[42,47.08],[44,47.04],[45,46.93],[46,47.07],[47,47.11],[48,47.3],[50,46.98],[51,47.06],[52,47.29],[54,47.39],[56,47.5],[58,47.6],[59,31.7],[60,31.67],[61,30.0],[73,45.26],[75,30.0],[119,27.38],[123,26.12],[249,27.79],[252,27.82],[254,27.81],[254,27.68],[255,27.69],[256,29.7],[259,29.21],[266,25.77],[275,22.55],[277,24.65],[282,24.84],[288,25.04],[288,22.54],[298,20.49],[302,18.44],[306,16.6],[308,15.34],[310,17.8],[314,29.06],[316,29.65],[318,15.87],[321,14.28],[324,14.47],[325,14.53],[326,16.53],[336,18.34],[342,16.51],[345,15.46],[350,15.55],[354,14.55],[358,13.72],[363,12.9]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

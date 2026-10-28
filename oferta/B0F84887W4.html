@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0F84887W4","t":"08:27","n":"Skechers Arch Fit Vista 2.0 zapatillas slip-in de mujer para primavera","i":"https://m.media-amazon.com/images/I/41RkxOk9Q3L.jpg","p":46.7,"b":109.95,"d":58.0,"c":"moda","u":"https://amzlink.to/az0lyiaUMDfVu","m":"Skechers","mi":"hist","ta":"36.5 EU, 37 EU, 38 EU, 41 EU, 42 EU","av":["Tallas: 36.5 EU, 37 EU, 38 EU, 41 EU, 42 EU"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,109.95],[244,75.96],[250,86.86],[256,94.56],[262,99.54],[269,94.28],[280,109.95],[287,76.33],[292,77.23],[296,68.7],[301,56.56],[304,109.95],[306,60.74],[312,54.67],[318,59.79],[321,53.81],[323,51.09],[324,47.25],[327,71.88],[330,109.95],[332,72.38],[336,76.05],[340,75.03],[345,73.26],[351,69.79],[357,69.48],[357,62.53],[361,58.71],[363,46.7]]}};
+const OFERTA = {"a":"B0F84887W4","t":"08:27","n":"Skechers Arch Fit Vista 2.0 zapatillas slip-in de mujer para primavera","i":"https://m.media-amazon.com/images/I/41RkxOk9Q3L.jpg","p":46.7,"b":109.95,"d":58.0,"c":"moda","u":"https://amzlink.to/az0lyiaUMDfVu","m":"Skechers","mi":"hist","ta":"36.5 EU, 37 EU, 38 EU, 41 EU, 42 EU","ok":1,"tc":"2026-10-28T15:52:20","pa":46.7,"ba":109.95,"av":["Tallas: 36.5 EU, 37 EU, 38 EU, 41 EU, 42 EU"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,109.95],[244,75.96],[250,86.86],[256,94.56],[262,99.54],[269,94.28],[280,109.95],[287,76.33],[292,77.23],[296,68.7],[301,56.56],[304,109.95],[306,60.74],[312,54.67],[318,59.79],[321,53.81],[323,51.09],[324,47.25],[327,71.88],[330,109.95],[332,72.38],[336,76.05],[340,75.03],[345,73.26],[351,69.79],[357,69.48],[357,62.53],[361,58.71],[363,46.7]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

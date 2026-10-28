@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0C28P3QNS","t":"11:15","n":"Old Spice Captain desodorante en barra para hombre 2x50ml + gel y champú 2x400ml","i":"https://m.media-amazon.com/images/I/41-HryuzqjL.jpg","p":8.54,"b":13.47,"d":37.0,"c":"belleza","u":"https://amzlink.to/az04beOiUAznq","m":"Old Spice","mi":"90","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,13.52],[0,9.99],[8,13.83],[9,15.03],[41,9.99],[55,11.9],[88,8.99],[102,11.9],[109,11.3],[110,11.9],[139,8.99],[153,11.9],[196,8.99],[210,13.47],[216,13.81],[223,13.73],[230,13.78],[234,11.9],[243,8.99],[257,11.9],[307,14.8],[309,15.17],[310,15.16],[310,8.99],[324,14.13],[324,14.05],[325,13.95],[326,13.92],[327,14.08],[328,14.09],[334,14.07],[336,14.24],[336,14.2],[336,14.19],[337,14.22],[338,14.19],[340,14.27],[341,14.49],[344,14.51],[345,14.57],[347,14.64],[347,14.65],[348,14.4],[349,14.53],[352,14.56],[358,14.71],[363,8.99]]}};
+const OFERTA = {"a":"B0C28P3QNS","t":"11:15","n":"Old Spice Captain desodorante en barra para hombre 2x50ml + gel y champú 2x400ml","i":"https://m.media-amazon.com/images/I/41-HryuzqjL.jpg","p":8.54,"b":13.47,"d":37.0,"c":"belleza","u":"https://amzlink.to/az04beOiUAznq","m":"Old Spice","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":8.99,"ba":13.47,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,13.52],[0,9.99],[8,13.83],[9,15.03],[41,9.99],[55,11.9],[88,8.99],[102,11.9],[109,11.3],[110,11.9],[139,8.99],[153,11.9],[196,8.99],[210,13.47],[216,13.81],[223,13.73],[230,13.78],[234,11.9],[243,8.99],[257,11.9],[307,14.8],[309,15.17],[310,15.16],[310,8.99],[324,14.13],[324,14.05],[325,13.95],[326,13.92],[327,14.08],[328,14.09],[334,14.07],[336,14.24],[336,14.2],[336,14.19],[337,14.22],[338,14.19],[340,14.27],[341,14.49],[344,14.51],[345,14.57],[347,14.64],[347,14.65],[348,14.4],[349,14.53],[352,14.56],[358,14.71],[363,8.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

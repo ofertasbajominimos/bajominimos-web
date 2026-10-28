@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B07821G99G","t":"16:44","n":"Puma Pantalones Cortos de Entrenamiento Liga Core para Hombre","i":"https://m.media-amazon.com/images/I/31IpYCyZ7KL.jpg","p":8.58,"b":19.95,"d":57.0,"c":"deporte","u":"https://amzlink.to/az0AgdTdijAM5","m":"Puma","mi":"90","ta":"116","ok":1,"tc":"2026-10-27T06:52:03","pa":8.58,"ba":19.95,"av":["Talla: 116"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,15.91],[1,14.91],[4,16.84],[10,17.71],[14,18.33],[20,18.29],[26,17.25],[38,17.19],[44,17.1],[50,8.17],[55,15.5],[56,16.99],[68,17.07],[74,17.13],[80,17.1],[86,17.11],[92,17.09],[110,16.88],[123,17.39],[128,17.59],[135,17.62],[150,17.4],[153,17.46],[158,17.79],[164,17.91],[181,17.93],[201,17.87],[206,17.86],[213,17.8],[216,16.25],[219,17.77],[222,16.43],[226,14.84],[229,16.95],[240,17.2],[244,15.97],[249,17.15],[254,16.08],[260,14.88],[269,14.0],[274,14.34],[277,14.49],[285,14.25],[288,13.09],[291,13.23],[298,14.36],[302,14.52],[307,15.45],[311,17.01],[318,16.0],[323,13.66],[327,17.62],[330,14.61],[332,13.15],[336,12.06],[344,13.63],[350,12.27],[354,17.55],[356,9.94],[359,9.09],[364,8.5]]}};
+const OFERTA = {"a":"B07821G99G","t":"16:44","n":"Puma Pantalones Cortos de Entrenamiento Liga Core para Hombre","i":"https://m.media-amazon.com/images/I/31IpYCyZ7KL.jpg","p":8.58,"b":19.95,"d":57.0,"c":"deporte","u":"https://amzlink.to/az0AgdTdijAM5","m":"Puma","mi":"90","ta":"116","ok":1,"tc":"2026-10-28T15:52:20","pa":17.66,"ba":19.95,"av":["Talla: 116"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,15.91],[1,14.91],[4,16.84],[10,17.71],[14,18.33],[20,18.29],[26,17.25],[38,17.19],[44,17.1],[50,8.17],[55,15.5],[56,16.99],[68,17.07],[74,17.13],[80,17.1],[86,17.11],[92,17.09],[110,16.88],[123,17.39],[128,17.59],[135,17.62],[150,17.4],[153,17.46],[158,17.79],[164,17.91],[181,17.93],[201,17.87],[206,17.86],[213,17.8],[216,16.25],[219,17.77],[222,16.43],[226,14.84],[229,16.95],[240,17.2],[244,15.97],[249,17.15],[254,16.08],[260,14.88],[269,14.0],[274,14.34],[277,14.49],[285,14.25],[288,13.09],[291,13.23],[298,14.36],[302,14.52],[307,15.45],[311,17.01],[318,16.0],[323,13.66],[327,17.62],[330,14.61],[332,13.15],[336,12.06],[344,13.63],[350,12.27],[354,17.55],[356,9.94],[359,9.09],[364,8.5]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

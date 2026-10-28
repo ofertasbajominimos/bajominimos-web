@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0065HAD6S","t":"15:27","n":"Viking Storm botas de lluvia para niños, unisex","i":"https://m.media-amazon.com/images/I/41LM9IcKt3L.jpg","p":16.24,"b":54.95,"d":70.0,"c":"moda","u":"https://amzlink.to/az0dEhGthxET0","mi":"90","ta":"31 EU","av":["Talla: 31 EU"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,33.7],[4,30.36],[6,43.95],[10,30.36],[12,28.76],[15,26.71],[17,33.79],[24,33.93],[30,30.54],[36,34.52],[40,26.0],[46,41.45],[49,46.95],[50,27.96],[52,25.16],[58,30.08],[63,23.8],[68,41.45],[82,23.6],[88,41.45],[92,40.19],[103,23.3],[112,41.45],[115,38.36],[117,34.52],[119,31.07],[139,25.95],[148,32.71],[157,22.1],[161,43.95],[167,29.44],[168,26.5],[177,24.7],[185,20.01],[193,14.59],[199,54.95],[220,33.93],[225,54.95],[236,33.93],[240,54.95],[241,30.54],[247,28.95],[249,33.08],[270,26.28],[279,54.95],[296,23.0],[300,20.6],[305,54.95],[315,18.63],[323,22.23],[336,21.11],[341,19.78],[346,18.43],[360,17.21],[364,16.3]]}};
+const OFERTA = {"a":"B0065HAD6S","t":"15:27","n":"Viking Storm botas de lluvia para niños, unisex","i":"https://m.media-amazon.com/images/I/41LM9IcKt3L.jpg","p":16.24,"b":54.95,"d":70.0,"c":"moda","u":"https://amzlink.to/az0dEhGthxET0","mi":"90","ta":"31 EU","ok":1,"tc":"2026-10-28T15:52:20","pa":16.24,"ba":54.95,"av":["Talla: 31 EU"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,33.7],[4,30.36],[6,43.95],[10,30.36],[12,28.76],[15,26.71],[17,33.79],[24,33.93],[30,30.54],[36,34.52],[40,26.0],[46,41.45],[49,46.95],[50,27.96],[52,25.16],[58,30.08],[63,23.8],[68,41.45],[82,23.6],[88,41.45],[92,40.19],[103,23.3],[112,41.45],[115,38.36],[117,34.52],[119,31.07],[139,25.95],[148,32.71],[157,22.1],[161,43.95],[167,29.44],[168,26.5],[177,24.7],[185,20.01],[193,14.59],[199,54.95],[220,33.93],[225,54.95],[236,33.93],[240,54.95],[241,30.54],[247,28.95],[249,33.08],[270,26.28],[279,54.95],[296,23.0],[300,20.6],[305,54.95],[315,18.63],[323,22.23],[336,21.11],[341,19.78],[346,18.43],[360,17.21],[364,16.3]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

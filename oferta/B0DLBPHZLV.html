@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DLBPHZLV","t":"13:50","n":"FILA Boldbay zapatillas casual para mujer","i":"https://m.media-amazon.com/images/I/31evBRtyadL.jpg","p":32.8,"b":75.0,"d":56.0,"c":"moda","u":"https://amzlink.to/az0705ujWSnNk","m":"Fila","ta":"40 EU","av":["Talla: 40 EU"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,75.0],[2,65.24],[2,64.32],[4,62.71],[9,62.69],[10,64.31],[10,63.48],[12,64.15],[13,62.6],[16,63.51],[22,65.24],[23,62.78],[26,62.73],[29,63.24],[30,62.54],[32,63.53],[32,65.24],[32,62.79],[32,62.12],[34,62.54],[37,62.36],[38,63.51],[38,59.17],[38,58.37],[39,57.95],[39,59.17],[39,57.77],[39,57.61],[41,57.75],[41,58.27],[41,58.71],[41,58.88],[42,57.97],[42,56.16],[43,56.24],[45,63.07],[48,64.35],[48,63.55],[50,65.08],[50,64.36],[51,62.84],[52,63.47],[52,64.17],[52,63.4],[52,62.09],[55,63.57],[56,63.4],[58,62.74],[58,56.24],[64,57.2],[64,57.02],[65,56.94],[66,56.75],[67,56.56],[69,56.58],[72,62.54],[75,62.42],[77,62.86],[78,62.46],[79,56.69],[81,56.35],[83,56.3],[85,62.6],[88,62.42],[90,65.24],[90,62.24],[90,63.46],[92,63.1],[94,51.2],[103,56.39],[112,56.49],[120,67.67],[129,51.74],[135,51.16],[141,48.79],[143,66.85],[144,66.8],[146,51.59],[148,48.79],[155,43.91],[158,56.45],[162,39.52],[165,35.57],[167,32.34],[169,56.45],[179,41.45],[189,33.95],[200,44.91],[202,49.9],[211,34.9],[235,31.41],[237,34.9],[247,59.95],[255,44.9],[261,43.05],[263,38.75],[269,31.39],[272,44.9],[282,32.33],[290,69.02],[296,70.49],[302,41.25],[307,70.49],[327,70.25],[338,43.88],[343,70.25],[354,39.49],[357,36.65],[362,32.8]]}};
+const OFERTA = {"a":"B0DLBPHZLV","t":"13:50","n":"FILA Boldbay zapatillas casual para mujer","i":"https://m.media-amazon.com/images/I/31evBRtyadL.jpg","p":32.8,"b":75.0,"d":56.0,"c":"moda","u":"https://amzlink.to/az0705ujWSnNk","m":"Fila","ta":"40 EU","ok":1,"tc":"2026-10-28T15:52:20","pa":32.8,"ba":75.0,"av":["Talla: 40 EU"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,75.0],[2,65.24],[2,64.32],[4,62.71],[9,62.69],[10,64.31],[10,63.48],[12,64.15],[13,62.6],[16,63.51],[22,65.24],[23,62.78],[26,62.73],[29,63.24],[30,62.54],[32,63.53],[32,65.24],[32,62.79],[32,62.12],[34,62.54],[37,62.36],[38,63.51],[38,59.17],[38,58.37],[39,57.95],[39,59.17],[39,57.77],[39,57.61],[41,57.75],[41,58.27],[41,58.71],[41,58.88],[42,57.97],[42,56.16],[43,56.24],[45,63.07],[48,64.35],[48,63.55],[50,65.08],[50,64.36],[51,62.84],[52,63.47],[52,64.17],[52,63.4],[52,62.09],[55,63.57],[56,63.4],[58,62.74],[58,56.24],[64,57.2],[64,57.02],[65,56.94],[66,56.75],[67,56.56],[69,56.58],[72,62.54],[75,62.42],[77,62.86],[78,62.46],[79,56.69],[81,56.35],[83,56.3],[85,62.6],[88,62.42],[90,65.24],[90,62.24],[90,63.46],[92,63.1],[94,51.2],[103,56.39],[112,56.49],[120,67.67],[129,51.74],[135,51.16],[141,48.79],[143,66.85],[144,66.8],[146,51.59],[148,48.79],[155,43.91],[158,56.45],[162,39.52],[165,35.57],[167,32.34],[169,56.45],[179,41.45],[189,33.95],[200,44.91],[202,49.9],[211,34.9],[235,31.41],[237,34.9],[247,59.95],[255,44.9],[261,43.05],[263,38.75],[269,31.39],[272,44.9],[282,32.33],[290,69.02],[296,70.49],[302,41.25],[307,70.49],[327,70.25],[338,43.88],[343,70.25],[354,39.49],[357,36.65],[362,32.8]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

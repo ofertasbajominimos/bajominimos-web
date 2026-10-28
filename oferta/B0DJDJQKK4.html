@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DJDJQKK4","t":"13:44","n":"PUMA Ultra Match Protect RC guantes de portero de fútbol","i":"https://m.media-amazon.com/images/I/41K1-gPHGvL.jpg","p":10.52,"b":24.66,"d":57.0,"c":"deporte","u":"https://amzlink.to/az0KrxdEDholD","m":"Puma","dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,51.8],[3,36.09],[5,33.73],[8,31.12],[14,28.01],[16,25.21],[18,22.69],[24,26.5],[26,51.8],[31,24.35],[36,21.92],[41,20.14],[43,20.6],[46,51.8],[47,19.1],[54,51.8],[76,39.0],[79,29.0],[80,39.0],[85,29.85],[92,28.13],[96,25.3],[107,28.13],[109,25.32],[113,25.51],[117,21.5],[125,50.0],[133,29.78],[135,30.06],[141,21.3],[145,33.0],[152,30.06],[154,33.98],[176,29.11],[178,26.2],[184,23.58],[186,26.84],[200,24.4],[204,21.96],[205,19.76],[207,18.21],[210,16.39],[212,15.06],[215,14.23],[225,13.08],[235,12.1],[236,11.9],[242,50.0],[254,11.7],[258,10.9],[264,50.0],[267,11.7],[273,10.76],[277,8.71],[278,7.84],[280,7.06],[282,7.31],[285,7.37],[288,8.87],[290,50.0],[299,42.0],[305,31.93],[314,48.0],[315,25.87],[318,23.28],[320,20.95],[322,20.97],[330,17.84],[336,27.14],[337,39.0],[340,42.0],[344,27.14],[346,24.43],[349,21.99],[351,19.79],[353,17.81],[361,12.99],[363,11.69],[364,10.52]]}};
+const OFERTA = {"a":"B0DJDJQKK4","t":"13:44","n":"PUMA Ultra Match Protect RC guantes de portero de fútbol","i":"https://m.media-amazon.com/images/I/41K1-gPHGvL.jpg","p":10.52,"b":24.66,"d":57.0,"c":"deporte","u":"https://amzlink.to/az0KrxdEDholD","m":"Puma","ok":1,"tc":"2026-10-28T15:52:20","pa":10.52,"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,51.8],[3,36.09],[5,33.73],[8,31.12],[14,28.01],[16,25.21],[18,22.69],[24,26.5],[26,51.8],[31,24.35],[36,21.92],[41,20.14],[43,20.6],[46,51.8],[47,19.1],[54,51.8],[76,39.0],[79,29.0],[80,39.0],[85,29.85],[92,28.13],[96,25.3],[107,28.13],[109,25.32],[113,25.51],[117,21.5],[125,50.0],[133,29.78],[135,30.06],[141,21.3],[145,33.0],[152,30.06],[154,33.98],[176,29.11],[178,26.2],[184,23.58],[186,26.84],[200,24.4],[204,21.96],[205,19.76],[207,18.21],[210,16.39],[212,15.06],[215,14.23],[225,13.08],[235,12.1],[236,11.9],[242,50.0],[254,11.7],[258,10.9],[264,50.0],[267,11.7],[273,10.76],[277,8.71],[278,7.84],[280,7.06],[282,7.31],[285,7.37],[288,8.87],[290,50.0],[299,42.0],[305,31.93],[314,48.0],[315,25.87],[318,23.28],[320,20.95],[322,20.97],[330,17.84],[336,27.14],[337,39.0],[340,42.0],[344,27.14],[346,24.43],[349,21.99],[351,19.79],[353,17.81],[361,12.99],[363,11.69],[364,10.52]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

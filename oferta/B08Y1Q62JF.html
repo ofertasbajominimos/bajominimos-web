@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B08Y1Q62JF","t":"08:59","n":"Seagate Game Drive para Xbox 2TB, disco duro externo portátil USB 3.2 Gen 1 negro","i":"https://m.media-amazon.com/images/I/31+UCQHBazL.jpg","p":102.99,"b":173.99,"d":41.0,"c":"tecnologia","u":"https://amzlink.to/az0HgkGLkfIoS","m":"Seagate","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,104.99],[4,102.89],[4,102.91],[5,104.99],[23,94.99],[35,104.99],[37,104.98],[38,104.99],[49,97.99],[55,104.99],[56,115.99],[63,98.99],[96,100.36],[99,101.65],[100,95.82],[100,108.99],[121,104.59],[121,108.99],[128,119.99],[133,98.99],[134,98.82],[134,118.47],[134,114.48],[134,119.99],[134,117.99],[140,120.99],[166,128.95],[166,128.99],[176,106.99],[183,128.99],[188,151.99],[224,148.91],[225,148.8],[226,148.89],[226,151.99],[226,148.89],[226,149.0],[227,149.69],[228,149.23],[229,149.2],[229,149.21],[230,149.3],[233,149.31],[233,149.54],[234,149.26],[235,149.58],[235,149.46],[236,151.99],[255,136.79],[256,151.99],[260,145.45],[261,145.73],[261,145.78],[261,145.84],[262,145.91],[265,151.99],[268,150.71],[269,150.87],[269,150.93],[270,151.47],[272,142.87],[275,133.75],[281,135.27],[281,147.47],[282,147.67],[283,148.09],[283,148.25],[288,173.99],[290,156.83],[291,157.21],[292,157.57],[293,157.75],[293,157.81],[294,158.0],[294,158.13],[295,173.99],[296,110.99],[303,105.43],[310,110.99],[338,173.99],[353,102.99]]}};
+const OFERTA = {"a":"B08Y1Q62JF","t":"08:59","n":"Seagate Game Drive para Xbox 2TB, disco duro externo portátil USB 3.2 Gen 1 negro","i":"https://m.media-amazon.com/images/I/31+UCQHBazL.jpg","p":102.99,"b":173.99,"d":41.0,"c":"tecnologia","u":"https://amzlink.to/az0HgkGLkfIoS","m":"Seagate","mi":"90","ok":0,"tc":"2026-10-28T15:52:20","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,104.99],[4,102.89],[4,102.91],[5,104.99],[23,94.99],[35,104.99],[37,104.98],[38,104.99],[49,97.99],[55,104.99],[56,115.99],[63,98.99],[96,100.36],[99,101.65],[100,95.82],[100,108.99],[121,104.59],[121,108.99],[128,119.99],[133,98.99],[134,98.82],[134,118.47],[134,114.48],[134,119.99],[134,117.99],[140,120.99],[166,128.95],[166,128.99],[176,106.99],[183,128.99],[188,151.99],[224,148.91],[225,148.8],[226,148.89],[226,151.99],[226,148.89],[226,149.0],[227,149.69],[228,149.23],[229,149.2],[229,149.21],[230,149.3],[233,149.31],[233,149.54],[234,149.26],[235,149.58],[235,149.46],[236,151.99],[255,136.79],[256,151.99],[260,145.45],[261,145.73],[261,145.78],[261,145.84],[262,145.91],[265,151.99],[268,150.71],[269,150.87],[269,150.93],[270,151.47],[272,142.87],[275,133.75],[281,135.27],[281,147.47],[282,147.67],[283,148.09],[283,148.25],[288,173.99],[290,156.83],[291,157.21],[292,157.57],[293,157.75],[293,157.81],[294,158.0],[294,158.13],[295,173.99],[296,110.99],[303,105.43],[310,110.99],[338,173.99],[353,102.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -200,15 +200,18 @@ const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDi
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 let cola = "todas";
 
-const cambio = o => o.pa != null && o.p != null && Math.abs(o.pa - o.p) > 0.01;      // el precio de ahora no es el de publicar
-const precioAhora = o => o.pa != null ? o.pa : o.p;
+// Precio de lista al publicar (pk): con "ahorro al tramitar el pedido" el precio publicado ya lleva ese descuento y es menor que el de la ficha de
+// Amazon, que es el que se comprueba después (la API no ve el descuento del pago): se compara con el de lista, no con el publicado
+const base = o => o.pk != null ? o.pk : o.p;
+const cambio = o => o.pa != null && base(o) != null && Math.abs(o.pa - base(o)) > 0.01;      // el precio de ahora no es el de publicar
+const precioAhora = o => (o.pa != null && cambio(o)) ? o.pa : o.p;
 function pct(o) {
   if (o.pa != null && cambio(o)) { const ref = o.ba || o.b; return ref && ref > o.pa ? Math.round((1 - o.pa / ref) * 100) : 0; }
   return o.d ? Math.round(o.d) : (o.b && o.p && o.b > o.p ? Math.round((1 - o.p / o.b) * 100) : 0);
 }
 function precioFinal(o) { return cambio(o) ? o.pa : (o.pc || precioAhora(o) || 0); }
 const agotada = o => o.ok === 0;
-const subio = o => cambio(o) && o.pa > o.p * 1.02;
+const subio = o => cambio(o) && o.pa > base(o) * 1.02;
 const terminada = o => agotada(o) || subio(o);       // ya no tiene la oferta original: no disponible o más cara que al publicar
 function cuandoTxt(iso) {
   const d = iso.slice(0, 10), hoy = new Date().toISOString().slice(0, 10);

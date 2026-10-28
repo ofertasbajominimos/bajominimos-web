@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B08YFCLYSK","t":"18:06","n":"Harina de Almendras Drasanvi Keto Bio 375 g","i":"https://m.media-amazon.com/images/I/41p-OLUdXTL.jpg","p":10.16,"b":14.09,"d":28.0,"c":"alimentacion","u":"https://amzlink.to/az0f8zhcmPnwy","mi":"90","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,12.32],[16,13.71],[17,10.84],[31,13.71],[36,10.84],[39,10.29],[51,13.71],[113,14.28],[115,13.71],[116,10.59],[130,13.71],[161,14.0],[162,13.71],[163,10.29],[178,13.71],[224,14.11],[239,11.89],[253,11.19],[269,14.11],[282,13.69],[286,14.11],[288,12.74],[307,14.11],[309,13.69],[318,12.74],[319,11.99],[334,12.74],[364,11.29]]}};
+const OFERTA = {"a":"B08YFCLYSK","t":"18:06","n":"Harina de Almendras Drasanvi Keto Bio 375 g","i":"https://m.media-amazon.com/images/I/41p-OLUdXTL.jpg","p":10.16,"b":14.09,"d":28.0,"c":"alimentacion","u":"https://amzlink.to/az0f8zhcmPnwy","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":11.29,"ba":14.09,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,12.32],[16,13.71],[17,10.84],[31,13.71],[36,10.84],[39,10.29],[51,13.71],[113,14.28],[115,13.71],[116,10.59],[130,13.71],[161,14.0],[162,13.71],[163,10.29],[178,13.71],[224,14.11],[239,11.89],[253,11.19],[269,14.11],[282,13.69],[286,14.11],[288,12.74],[307,14.11],[309,13.69],[318,12.74],[319,11.99],[334,12.74],[364,11.29]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

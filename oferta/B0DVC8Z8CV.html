@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DVC8Z8CV","t":"10:36","n":"Corsair MP600 Core XT 1TB M.2 PCIe Gen4 NVMe SSD, hasta 5900 MB/s, negro","i":"https://m.media-amazon.com/images/I/41Np7yar5YL.jpg","p":189.99,"b":229.88,"d":17.0,"c":"tecnologia","u":"https://amzlink.to/az0i9tbjSTTD1","m":"Corsair","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,83.83],[23,104.99],[24,89.99],[41,92.99],[45,114.99],[48,139.98],[48,147.09],[50,169.0],[63,219.61],[69,195.0],[115,290.84],[115,232.36],[117,229.43],[118,239.62],[118,239.0],[119,235.55],[119,237.26],[120,233.83],[121,242.86],[128,290.84],[133,279.0],[133,290.84],[135,279.0],[135,290.84],[144,279.0],[144,290.84],[157,120.0],[157,100.0],[157,120.0],[157,297.06],[158,290.84],[165,297.06],[165,290.84],[167,297.06],[169,279.0],[169,229.99],[176,297.06],[194,295.12],[195,297.06],[204,219.89],[212,250.83],[239,297.06],[280,327.0],[280,419.0],[282,448.0],[283,449.0],[287,448.21],[288,447.0],[288,448.0],[290,297.06],[349,279.0],[352,219.99],[364,189.99]]}};
+const OFERTA = {"a":"B0DVC8Z8CV","t":"10:36","n":"Corsair MP600 Core XT 1TB M.2 PCIe Gen4 NVMe SSD, hasta 5900 MB/s, negro","i":"https://m.media-amazon.com/images/I/41Np7yar5YL.jpg","p":189.99,"b":229.88,"d":17.0,"c":"tecnologia","u":"https://amzlink.to/az0i9tbjSTTD1","m":"Corsair","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":189.99,"ba":219.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,83.83],[23,104.99],[24,89.99],[41,92.99],[45,114.99],[48,139.98],[48,147.09],[50,169.0],[63,219.61],[69,195.0],[115,290.84],[115,232.36],[117,229.43],[118,239.62],[118,239.0],[119,235.55],[119,237.26],[120,233.83],[121,242.86],[128,290.84],[133,279.0],[133,290.84],[135,279.0],[135,290.84],[144,279.0],[144,290.84],[157,120.0],[157,100.0],[157,120.0],[157,297.06],[158,290.84],[165,297.06],[165,290.84],[167,297.06],[169,279.0],[169,229.99],[176,297.06],[194,295.12],[195,297.06],[204,219.89],[212,250.83],[239,297.06],[280,327.0],[280,419.0],[282,448.0],[283,449.0],[287,448.21],[288,447.0],[288,448.0],[290,297.06],[349,279.0],[352,219.99],[364,189.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FDCCKVR9","t":"17:50","n":"Skechers Academy Hi Elevated Essence zapatillas de mujer","i":"https://m.media-amazon.com/images/I/41BAsbIUOUL.jpg","p":30.1,"b":74.95,"d":60.0,"c":"moda","u":"https://amzlink.to/az0wdLP9eXa4x","m":"Skechers","mi":"hist","ta":"36.5 EU, 40 EU","ok":1,"tc":"2026-10-27T06:52:03","pa":30.1,"ba":74.95,"av":["Tallas: 36.5 EU, 40 EU"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,74.95],[78,121.99],[80,120.99],[83,116.99],[85,115.99],[86,114.99],[87,113.99],[89,112.99],[94,110.99],[94,109.99],[97,107.99],[98,106.99],[104,104.99],[106,74.95],[149,70.0],[176,75.0],[197,71.58],[222,57.33],[224,57.34],[225,52.18],[228,52.1],[229,54.74],[234,52.49],[239,49.2],[245,61.78],[248,65.68],[264,53.98],[265,48.58],[266,43.72],[269,65.68],[295,51.23],[313,47.35],[317,42.62],[321,34.52],[325,32.34],[327,41.1],[338,40.13],[345,65.68],[354,65.42],[358,51.49],[359,46.34],[360,41.71],[362,37.54],[364,30.1]]}};
+const OFERTA = {"a":"B0FDCCKVR9","t":"17:50","n":"Skechers Academy Hi Elevated Essence zapatillas de mujer","i":"https://m.media-amazon.com/images/I/41BAsbIUOUL.jpg","p":30.1,"b":74.95,"d":60.0,"c":"moda","u":"https://amzlink.to/az0wdLP9eXa4x","m":"Skechers","mi":"hist","ta":"36.5 EU, 40 EU","ok":1,"tc":"2026-10-28T15:52:20","pa":65.42,"ba":74.95,"av":["Tallas: 36.5 EU, 40 EU"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,74.95],[78,121.99],[80,120.99],[83,116.99],[85,115.99],[86,114.99],[87,113.99],[89,112.99],[94,110.99],[94,109.99],[97,107.99],[98,106.99],[104,104.99],[106,74.95],[149,70.0],[176,75.0],[197,71.58],[222,57.33],[224,57.34],[225,52.18],[228,52.1],[229,54.74],[234,52.49],[239,49.2],[245,61.78],[248,65.68],[264,53.98],[265,48.58],[266,43.72],[269,65.68],[295,51.23],[313,47.35],[317,42.62],[321,34.52],[325,32.34],[327,41.1],[338,40.13],[345,65.68],[354,65.42],[358,51.49],[359,46.34],[360,41.71],[362,37.54],[364,30.1]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

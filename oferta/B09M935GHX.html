@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B09M935GHX","t":"11:41","n":"Name It Nkmtights 3p Noos Pantis Niños (Pack de 3)","i":"https://m.media-amazon.com/images/I/21psqspW+uL.jpg","p":7.0,"b":13.99,"d":50.0,"c":"moda","u":"https://amzlink.to/az0QfXP3FqP4L","m":"Name It","mi":"hist","ta":"98","av":["Talla: 98"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,16.99],[10,14.99],[23,11.89],[31,16.99],[32,14.44],[39,16.99],[71,14.99],[94,16.99],[176,14.99],[266,16.99],[291,14.99],[301,14.44],[328,9.18],[337,14.44],[358,7.6],[362,12.73],[363,7.0]]}};
+const OFERTA = {"a":"B09M935GHX","t":"11:41","n":"Name It Nkmtights 3p Noos Pantis Niños (Pack de 3)","i":"https://m.media-amazon.com/images/I/21psqspW+uL.jpg","p":7.0,"b":13.99,"d":50.0,"c":"moda","u":"https://amzlink.to/az0QfXP3FqP4L","m":"Name It","mi":"hist","ta":"98","ok":1,"tc":"2026-10-28T15:52:20","pa":7.0,"ba":13.99,"av":["Talla: 98"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,16.99],[10,14.99],[23,11.89],[31,16.99],[32,14.44],[39,16.99],[71,14.99],[94,16.99],[176,14.99],[266,16.99],[291,14.99],[301,14.44],[328,9.18],[337,14.44],[358,7.6],[362,12.73],[363,7.0]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

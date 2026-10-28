@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B07WNQLPL6","t":"15:17","n":"Utopia Bedding Juego de Sábanas 4 Piezas 135x190cm Azul Spa","i":"https://m.media-amazon.com/images/I/41BrRflMEOL.jpg","p":13.7,"b":19.99,"d":31.0,"c":"hogar","u":"https://amzlink.to/az0gSauWMV4DE","mi":"90","ok":1,"tc":"2026-10-27T06:52:03","pa":13.7,"ba":19.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-25","serie":{"d0":"2025-10-25","s":[[0,16.99],[1,16.14],[3,19.99],[9,16.99],[15,15.33],[18,16.99],[21,19.99],[22,16.99],[22,19.99],[23,16.14],[24,19.99],[25,14.56],[37,19.99],[39,16.14],[43,19.99],[44,13.83],[50,19.99],[50,16.14],[57,13.83],[57,13.14],[71,19.99],[71,16.14],[73,19.99],[75,14.56],[81,19.99],[85,12.48],[99,19.99],[100,13.83],[100,19.99],[102,18.99],[106,15.99],[113,11.86],[127,18.99],[130,15.99],[131,18.99],[131,15.99],[135,18.99],[139,18.04],[141,17.99],[151,16.99],[156,15.99],[157,15.19],[163,12.47],[177,15.19],[186,15.99],[191,15.19],[192,15.99],[222,19.99],[267,15.98],[274,19.99],[283,21.99],[289,15.18],[303,21.99],[318,18.99],[331,14.42],[331,18.99],[348,17.05],[354,13.7]]}};
+const OFERTA = {"a":"B07WNQLPL6","t":"15:17","n":"Utopia Bedding Juego de Sábanas 4 Piezas 135x190cm Azul Spa","i":"https://m.media-amazon.com/images/I/41BrRflMEOL.jpg","p":13.7,"b":19.99,"d":31.0,"c":"hogar","u":"https://amzlink.to/az0gSauWMV4DE","mi":"90","ok":1,"tc":"2026-10-27T12:52:05","pa":13.7,"ba":19.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-25","serie":{"d0":"2025-10-25","s":[[0,16.99],[1,16.14],[3,19.99],[9,16.99],[15,15.33],[18,16.99],[21,19.99],[22,16.99],[22,19.99],[23,16.14],[24,19.99],[25,14.56],[37,19.99],[39,16.14],[43,19.99],[44,13.83],[50,19.99],[50,16.14],[57,13.83],[57,13.14],[71,19.99],[71,16.14],[73,19.99],[75,14.56],[81,19.99],[85,12.48],[99,19.99],[100,13.83],[100,19.99],[102,18.99],[106,15.99],[113,11.86],[127,18.99],[130,15.99],[131,18.99],[131,15.99],[135,18.99],[139,18.04],[141,17.99],[151,16.99],[156,15.99],[157,15.19],[163,12.47],[177,15.19],[186,15.99],[191,15.19],[192,15.99],[222,19.99],[267,15.98],[274,19.99],[283,21.99],[289,15.18],[303,21.99],[318,18.99],[331,14.42],[331,18.99],[348,17.05],[354,13.7]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

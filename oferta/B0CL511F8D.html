@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0CL511F8D","t":"17:11","n":"Drasanvi Citrato de Magnesio en polvo sabor limón 200 g","i":"https://m.media-amazon.com/images/I/418QNTw7osL.jpg","p":7.91,"b":12.45,"d":36.0,"c":"belleza","u":"https://amzlink.to/az0LtlnzN11AP","mi":"90","ok":1,"tc":"2026-10-27T06:52:03","pa":12.45,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,13.99],[1,13.95],[2,13.99],[3,11.09],[18,12.89],[21,12.87],[22,10.09],[33,13.99],[37,13.47],[38,12.89],[39,13.19],[40,13.47],[41,13.49],[43,13.19],[45,13.29],[46,13.19],[47,13.29],[49,13.19],[53,13.29],[54,13.1],[54,13.19],[55,12.87],[55,12.89],[65,12.87],[65,12.45],[101,10.79],[116,12.45],[134,10.19],[149,12.45],[198,13.79],[201,13.75],[202,13.79],[204,13.75],[205,13.79],[207,13.75],[208,13.79],[209,10.49],[224,12.45],[254,9.89],[269,12.45],[305,9.29],[320,12.45],[350,8.79]]}};
+const OFERTA = {"a":"B0CL511F8D","t":"17:11","n":"Drasanvi Citrato de Magnesio en polvo sabor limón 200 g","i":"https://m.media-amazon.com/images/I/418QNTw7osL.jpg","p":7.91,"b":12.45,"d":36.0,"c":"belleza","u":"https://amzlink.to/az0LtlnzN11AP","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":12.45,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,13.99],[1,13.95],[2,13.99],[3,11.09],[18,12.89],[21,12.87],[22,10.09],[33,13.99],[37,13.47],[38,12.89],[39,13.19],[40,13.47],[41,13.49],[43,13.19],[45,13.29],[46,13.19],[47,13.29],[49,13.19],[53,13.29],[54,13.1],[54,13.19],[55,12.87],[55,12.89],[65,12.87],[65,12.45],[101,10.79],[116,12.45],[134,10.19],[149,12.45],[198,13.79],[201,13.75],[202,13.79],[204,13.75],[205,13.79],[207,13.75],[208,13.79],[209,10.49],[224,12.45],[254,9.89],[269,12.45],[305,9.29],[320,12.45],[350,8.79]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DZ778MZV","t":"10:49","n":"Apple iPad Air 11 pulgadas chip M3, 1 TB, Wi-Fi y 5G, color púrpura","i":"https://m.media-amazon.com/images/I/31BRhiLfoLL.jpg","p":1197.3,"b":1303.5,"d":8.0,"c":"tecnologia","u":"https://amzlink.to/az08lWyzjvvba","m":"Apple","dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,1399.0],[6,1449.0],[7,1442.0],[8,1409.0],[18,1416.0],[19,1418.0],[21,1415.0],[22,1408.0],[22,1405.0],[22,1406.0],[23,1349.0],[24,1299.0],[34,1359.0],[42,1379.0],[46,1359.0],[58,1329.0],[70,1359.0],[119,1449.0],[120,1359.0],[125,1349.0],[128,1214.1],[132,1214.0],[133,1214.1],[134,1214.0],[134,1226.81],[139,1226.0],[140,1112.92],[142,1299.0],[142,1112.0],[146,1299.0],[156,1112.92],[157,1001.63],[159,901.47],[159,1299.0],[161,901.47],[162,1299.0],[167,999.0],[168,1299.0],[168,999.0],[174,1079.0],[176,1199.0],[224,1139.0],[233,1179.0],[252,1389.0],[252,1179.0],[253,1389.0],[253,1179.0],[260,1119.0],[267,1389.0],[267,1119.0],[269,1063.0],[282,1120.05],[318,1007.0],[328,1389.0],[333,1739.0],[357,1408.59],[362,1267.73],[364,1197.3]]}};
+const OFERTA = {"a":"B0DZ778MZV","t":"10:49","n":"Apple iPad Air 11 pulgadas chip M3, 1 TB, Wi-Fi y 5G, color púrpura","i":"https://m.media-amazon.com/images/I/31BRhiLfoLL.jpg","p":1197.3,"b":1303.5,"d":8.0,"c":"tecnologia","u":"https://amzlink.to/az08lWyzjvvba","m":"Apple","ok":1,"tc":"2026-10-28T15:52:20","pa":1197.3,"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,1399.0],[6,1449.0],[7,1442.0],[8,1409.0],[18,1416.0],[19,1418.0],[21,1415.0],[22,1408.0],[22,1405.0],[22,1406.0],[23,1349.0],[24,1299.0],[34,1359.0],[42,1379.0],[46,1359.0],[58,1329.0],[70,1359.0],[119,1449.0],[120,1359.0],[125,1349.0],[128,1214.1],[132,1214.0],[133,1214.1],[134,1214.0],[134,1226.81],[139,1226.0],[140,1112.92],[142,1299.0],[142,1112.0],[146,1299.0],[156,1112.92],[157,1001.63],[159,901.47],[159,1299.0],[161,901.47],[162,1299.0],[167,999.0],[168,1299.0],[168,999.0],[174,1079.0],[176,1199.0],[224,1139.0],[233,1179.0],[252,1389.0],[252,1179.0],[253,1389.0],[253,1179.0],[260,1119.0],[267,1389.0],[267,1119.0],[269,1063.0],[282,1120.05],[318,1007.0],[328,1389.0],[333,1739.0],[357,1408.59],[362,1267.73],[364,1197.3]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

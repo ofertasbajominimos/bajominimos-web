@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FPLFXKHV","t":"23:15","n":"Cargador iPhone 25W USB C con cable Lightning 2M MFi certificado","i":"https://m.media-amazon.com/images/I/31OjTfi8A9L.jpg","p":12.0,"b":16.99,"d":29.0,"c":"otros","u":"https://amzlink.to/az07sfQ41jStE","mi":"90","pr":"Oferta Prime limitada","ok":1,"tc":"2026-10-27T06:52:03","pa":12.0,"ba":16.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,13.99],[104,16.99],[105,11.99],[119,14.99],[134,11.39],[141,14.99],[148,16.99],[252,13.99],[266,16.99],[301,13.29],[315,16.99],[322,12.63],[333,16.99]]}};
+const OFERTA = {"a":"B0FPLFXKHV","t":"23:15","n":"Cargador iPhone 25W USB C con cable Lightning 2M MFi certificado","i":"https://m.media-amazon.com/images/I/31OjTfi8A9L.jpg","p":12.0,"b":16.99,"d":29.0,"c":"otros","u":"https://amzlink.to/az07sfQ41jStE","mi":"90","pr":"Oferta Prime limitada","ok":1,"tc":"2026-10-28T15:52:20","pa":12.0,"ba":16.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,13.99],[104,16.99],[105,11.99],[119,14.99],[134,11.39],[141,14.99],[148,16.99],[252,13.99],[266,16.99],[301,13.29],[315,16.99],[322,12.63],[333,16.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

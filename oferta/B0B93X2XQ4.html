@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0B93X2XQ4","t":"14:16","n":"Danish Endurance calcetines senderismo finos de lana merina, pack de 2 y 4 unidades","i":"https://m.media-amazon.com/images/I/31Xo6XUHyYL.jpg","p":18.95,"b":32.95,"d":42.0,"c":"deporte","u":"https://amzlink.to/az0FhLe8n8mYw","m":"DANISH ENDURANCE","mi":"90","ta":"39-42","av":["Talla: 39-42"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,29.95],[1,28.45],[6,29.45],[11,28.45],[17,29.45],[22,29.95],[29,28.45],[34,19.5],[40,29.45],[64,39.95],[82,23.95],[89,39.95],[122,29.95],[139,22.95],[145,29.95],[188,22.95],[201,29.95],[210,32.95],[211,29.95],[230,20.9],[236,29.95],[243,18.95],[257,29.95],[294,32.95],[295,29.95],[314,18.95],[327,29.95],[364,18.95]]}};
+const OFERTA = {"a":"B0B93X2XQ4","t":"14:16","n":"Danish Endurance calcetines senderismo finos de lana merina, pack de 2 y 4 unidades","i":"https://m.media-amazon.com/images/I/31Xo6XUHyYL.jpg","p":18.95,"b":32.95,"d":42.0,"c":"deporte","u":"https://amzlink.to/az0FhLe8n8mYw","m":"DANISH ENDURANCE","mi":"90","ta":"39-42","ok":1,"tc":"2026-10-28T15:52:20","pa":18.95,"ba":32.95,"av":["Talla: 39-42"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,29.95],[1,28.45],[6,29.45],[11,28.45],[17,29.45],[22,29.95],[29,28.45],[34,19.5],[40,29.45],[64,39.95],[82,23.95],[89,39.95],[122,29.95],[139,22.95],[145,29.95],[188,22.95],[201,29.95],[210,32.95],[211,29.95],[230,20.9],[236,29.95],[243,18.95],[257,29.95],[294,32.95],[295,29.95],[314,18.95],[327,29.95],[364,18.95]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

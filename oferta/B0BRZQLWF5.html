@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0BRZQLWF5","t":"11:20","n":"Stouchi Cable DisplayPort 2.1 DP2.1 80Gbps 8K@120Hz 4K@240Hz 2 m","i":"https://m.media-amazon.com/images/I/41XYocueAjL.jpg","p":10.77,"b":20.99,"d":49.0,"c":"otros","u":"https://amzlink.to/az0QJokdBSyAv","mi":"hist","ok":1,"tc":"2026-10-27T06:52:03","pa":10.77,"ba":20.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,12.99],[7,20.99],[8,12.99],[24,12.34],[24,20.99],[24,12.34],[25,20.99],[25,12.34],[26,20.99],[26,12.34],[26,20.99],[26,12.34],[29,20.99],[29,12.34],[30,20.99],[47,12.99],[124,20.99],[125,12.99],[134,20.99],[141,12.99],[171,20.99],[172,12.99],[201,20.99],[204,12.99],[211,20.99],[212,12.99],[217,12.34],[224,20.99],[246,12.99],[253,20.99],[255,12.99],[273,20.99],[284,13.48],[288,12.99],[295,20.99],[304,12.34],[310,20.99],[313,12.59],[315,20.99],[317,12.99],[322,20.99],[332,12.99],[337,11.34],[343,20.99],[347,12.99],[350,11.34],[359,20.99],[364,10.77]]}};
+const OFERTA = {"a":"B0BRZQLWF5","t":"11:20","n":"Stouchi Cable DisplayPort 2.1 DP2.1 80Gbps 8K@120Hz 4K@240Hz 2 m","i":"https://m.media-amazon.com/images/I/41XYocueAjL.jpg","p":10.77,"b":20.99,"d":49.0,"c":"otros","u":"https://amzlink.to/az0QJokdBSyAv","mi":"hist","ok":1,"tc":"2026-10-28T09:52:16","pa":10.77,"ba":20.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,12.99],[7,20.99],[8,12.99],[24,12.34],[24,20.99],[24,12.34],[25,20.99],[25,12.34],[26,20.99],[26,12.34],[26,20.99],[26,12.34],[29,20.99],[29,12.34],[30,20.99],[47,12.99],[124,20.99],[125,12.99],[134,20.99],[141,12.99],[171,20.99],[172,12.99],[201,20.99],[204,12.99],[211,20.99],[212,12.99],[217,12.34],[224,20.99],[246,12.99],[253,20.99],[255,12.99],[273,20.99],[284,13.48],[288,12.99],[295,20.99],[304,12.34],[310,20.99],[313,12.59],[315,20.99],[317,12.99],[322,20.99],[332,12.99],[337,11.34],[343,20.99],[347,12.99],[350,11.34],[359,20.99],[364,10.77]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

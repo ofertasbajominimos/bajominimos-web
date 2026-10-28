@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0GBWTN3LJ","t":"15:06","n":"King C. Gillette Recortadora de Barba Hombre Pro Max con 6 accesorios, 4 peines y funda","i":"https://m.media-amazon.com/images/I/412YhJg8f-L.jpg","p":39.99,"b":59.99,"d":33.0,"c":"belleza","u":"https://amzlink.to/az0K7A49Ep90b","mi":"hist","rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2026-02-09","s":[[0,59.99],[18,39.99],[29,59.99],[64,39.99],[78,59.99],[119,56.39],[119,39.99],[133,59.99],[169,58.19],[170,59.99],[177,39.99],[191,59.99],[196,64.99],[199,63.95],[200,64.36],[200,63.95],[201,64.63],[202,63.95],[205,59.99],[219,63.94],[220,63.45],[226,59.99],[226,63.44],[231,63.11],[233,59.99],[239,59.63],[241,59.99],[242,59.69],[244,59.99],[245,59.67],[249,59.98],[250,59.6],[250,62.85],[251,62.27],[251,61.34],[251,60.94],[251,60.53],[251,60.16],[251,60.76],[251,63.16],[251,61.89],[251,63.08],[252,59.99],[259,39.99]]}};
+const OFERTA = {"a":"B0GBWTN3LJ","t":"15:06","n":"King C. Gillette Recortadora de Barba Hombre Pro Max con 6 accesorios, 4 peines y funda","i":"https://m.media-amazon.com/images/I/412YhJg8f-L.jpg","p":39.99,"b":59.99,"d":33.0,"c":"belleza","u":"https://amzlink.to/az0K7A49Ep90b","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":39.99,"ba":59.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2026-02-09","s":[[0,59.99],[18,39.99],[29,59.99],[64,39.99],[78,59.99],[119,56.39],[119,39.99],[133,59.99],[169,58.19],[170,59.99],[177,39.99],[191,59.99],[196,64.99],[199,63.95],[200,64.36],[200,63.95],[201,64.63],[202,63.95],[205,59.99],[219,63.94],[220,63.45],[226,59.99],[226,63.44],[231,63.11],[233,59.99],[239,59.63],[241,59.99],[242,59.69],[244,59.99],[245,59.67],[249,59.98],[250,59.6],[250,62.85],[251,62.27],[251,61.34],[251,60.94],[251,60.53],[251,60.16],[251,60.76],[251,63.16],[251,61.89],[251,63.08],[252,59.99],[259,39.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

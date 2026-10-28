@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FJRWCJDL","t":"10:06","n":"HOMCOM mesa consola recibidor 124x43,5x80 cm natural con cuerda de papel trenzada","i":"https://m.media-amazon.com/images/I/51YBrXOPF1L.jpg","p":47.37,"b":80.99,"d":42.0,"c":"hogar","u":"https://amzlink.to/az0rSHNhrJ48z","mi":"hist","rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,77.99],[1,81.99],[6,77.99],[13,61.36],[23,77.99],[37,73.99],[55,69.99],[70,72.99],[72,75.99],[84,66.49],[87,75.99],[90,78.99],[94,82.99],[97,86.99],[98,89.99],[99,91.99],[100,95.99],[112,62.89],[115,95.99],[120,91.99],[133,88.99],[143,84.99],[155,71.31],[158,84.99],[175,72.24],[183,84.99],[189,81.99],[198,84.99],[216,69.69],[224,78.99],[245,63.19],[250,81.99],[251,85.99],[253,88.99],[256,91.99],[259,94.99],[272,85.49],[277,94.99],[282,80.74],[286,80.99],[294,72.24],[300,80.99],[302,78.99],[308,74.99],[316,52.49],[321,74.99],[328,68.99],[331,58.6],[336,68.99],[349,72.99],[357,51.5],[363,47.37]]}};
+const OFERTA = {"a":"B0FJRWCJDL","t":"10:06","n":"HOMCOM mesa consola recibidor 124x43,5x80 cm natural con cuerda de papel trenzada","i":"https://m.media-amazon.com/images/I/51YBrXOPF1L.jpg","p":47.37,"b":80.99,"d":42.0,"c":"hogar","u":"https://amzlink.to/az0rSHNhrJ48z","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":47.37,"ba":80.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,77.99],[1,81.99],[6,77.99],[13,61.36],[23,77.99],[37,73.99],[55,69.99],[70,72.99],[72,75.99],[84,66.49],[87,75.99],[90,78.99],[94,82.99],[97,86.99],[98,89.99],[99,91.99],[100,95.99],[112,62.89],[115,95.99],[120,91.99],[133,88.99],[143,84.99],[155,71.31],[158,84.99],[175,72.24],[183,84.99],[189,81.99],[198,84.99],[216,69.69],[224,78.99],[245,63.19],[250,81.99],[251,85.99],[253,88.99],[256,91.99],[259,94.99],[272,85.49],[277,94.99],[282,80.74],[286,80.99],[294,72.24],[300,80.99],[302,78.99],[308,74.99],[316,52.49],[321,74.99],[328,68.99],[331,58.6],[336,68.99],[349,72.99],[357,51.5],[363,47.37]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

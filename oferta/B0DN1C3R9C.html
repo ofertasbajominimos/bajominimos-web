@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DN1C3R9C","t":"10:10","n":"OTREN Lámpara de Techo LED 30cm Cuadrada 6500K IP44 28W 2400LM (Pack de 2)","i":"https://m.media-amazon.com/images/I/41qO1T9r3yL.jpg","p":21.55,"b":35.99,"d":40.0,"c":"hogar","u":"https://amzlink.to/az0BRJN0th4wh","mi":"hist","rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,35.99],[0,34.19],[14,35.99],[24,32.48],[35,35.99],[58,30.86],[72,35.99],[116,34.19],[125,35.99],[169,34.19],[184,35.99],[206,32.48],[210,35.99],[211,32.48],[215,30.86],[224,35.99],[263,27.84],[274,35.99],[290,29.99],[295,26.45],[308,25.13],[323,23.87],[336,29.99],[360,25.99],[364,21.55]]}};
+const OFERTA = {"a":"B0DN1C3R9C","t":"10:10","n":"OTREN Lámpara de Techo LED 30cm Cuadrada 6500K IP44 28W 2400LM (Pack de 2)","i":"https://m.media-amazon.com/images/I/41qO1T9r3yL.jpg","p":21.55,"b":35.99,"d":40.0,"c":"hogar","u":"https://amzlink.to/az0BRJN0th4wh","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":21.55,"ba":35.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,35.99],[0,34.19],[14,35.99],[24,32.48],[35,35.99],[58,30.86],[72,35.99],[116,34.19],[125,35.99],[169,34.19],[184,35.99],[206,32.48],[210,35.99],[211,32.48],[215,30.86],[224,35.99],[263,27.84],[274,35.99],[290,29.99],[295,26.45],[308,25.13],[323,23.87],[336,29.99],[360,25.99],[364,21.55]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

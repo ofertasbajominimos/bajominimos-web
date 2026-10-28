@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B08PFJC2SP","t":"18:15","n":"TwoWin Cabeza de Maniquí 60cm con 80% cabello humano para trenzado, cortes y peinados (rubio)","i":"https://m.media-amazon.com/images/I/51s8JXdO0pL.jpg","p":35.28,"b":49.99,"d":29.0,"c":"belleza","u":"https://amzlink.to/az0cSLrZdACHs","mi":"90","ok":1,"tc":"2026-10-27T06:52:03","pa":35.28,"ba":49.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,49.99],[1,42.49],[2,49.99],[3,42.49],[11,49.99],[11,42.49],[25,39.99],[25,49.99],[26,39.99],[29,49.99],[29,39.99],[30,49.99],[37,39.99],[37,37.99],[42,49.99],[58,36.09],[63,49.99],[63,42.49],[70,34.29],[76,49.99],[83,32.58],[88,49.99],[97,30.95],[103,39.99],[110,29.4],[117,49.99],[124,42.49],[130,30.95],[136,39.99],[142,49.99],[144,29.4],[149,49.99],[163,29.4],[166,37.99],[175,49.99],[177,29.4],[183,49.99],[196,42.49],[207,49.99],[240,44.99],[244,49.99],[324,45.99],[333,43.69],[342,45.99],[346,41.51],[348,37.14],[357,45.99],[364,35.28]]}};
+const OFERTA = {"a":"B08PFJC2SP","t":"18:15","n":"TwoWin Cabeza de Maniquí 60cm con 80% cabello humano para trenzado, cortes y peinados (rubio)","i":"https://m.media-amazon.com/images/I/51s8JXdO0pL.jpg","p":35.28,"b":49.99,"d":29.0,"c":"belleza","u":"https://amzlink.to/az0cSLrZdACHs","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":35.28,"ba":49.99,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,49.99],[1,42.49],[2,49.99],[3,42.49],[11,49.99],[11,42.49],[25,39.99],[25,49.99],[26,39.99],[29,49.99],[29,39.99],[30,49.99],[37,39.99],[37,37.99],[42,49.99],[58,36.09],[63,49.99],[63,42.49],[70,34.29],[76,49.99],[83,32.58],[88,49.99],[97,30.95],[103,39.99],[110,29.4],[117,49.99],[124,42.49],[130,30.95],[136,39.99],[142,49.99],[144,29.4],[149,49.99],[163,29.4],[166,37.99],[175,49.99],[177,29.4],[183,49.99],[196,42.49],[207,49.99],[240,44.99],[244,49.99],[324,45.99],[333,43.69],[342,45.99],[346,41.51],[348,37.14],[357,45.99],[364,35.28]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0C68ZK99J","t":"13:37","n":"Name It NKFROSE Wide Twill Cargo 8108-BA Noos, pantalones cargo de niña","i":"https://m.media-amazon.com/images/I/21Mk9+0b1SL.jpg","p":6.1,"b":13.05,"d":53.0,"c":"moda","u":"https://amzlink.to/az0lEFsJOFeNL","m":"Name It","ta":"134","ok":0,"tc":"2026-10-27T06:52:03","pa":35.73,"av":["Talla: 134"],"dia":"2026-10-25","serie":{"d0":"2025-10-25","s":[[0,22.84],[20,26.93],[26,24.67],[30,25.0],[33,24.43],[36,21.23],[43,21.72],[50,26.37],[55,26.69],[60,25.34],[64,26.69],[77,25.34],[80,26.69],[108,24.98],[116,24.97],[133,24.98],[160,24.7],[166,22.33],[173,21.02],[180,24.93],[196,23.13],[201,21.01],[203,22.23],[215,21.79],[230,19.67],[243,16.28],[257,12.58],[270,22.89],[278,13.14],[287,8.91],[300,7.0],[306,14.51],[311,10.58],[318,7.71],[324,23.57],[326,6.25],[327,12.58],[331,11.32],[334,10.19],[337,25.36],[346,25.09],[350,9.17],[353,8.25],[355,7.43],[364,6.1]]}};
+const OFERTA = {"a":"B0C68ZK99J","t":"13:37","n":"Name It NKFROSE Wide Twill Cargo 8108-BA Noos, pantalones cargo de niña","i":"https://m.media-amazon.com/images/I/21Mk9+0b1SL.jpg","p":6.1,"b":13.05,"d":53.0,"c":"moda","u":"https://amzlink.to/az0lEFsJOFeNL","m":"Name It","ta":"134","ok":0,"tc":"2026-10-27T12:52:05","pa":35.73,"av":["Talla: 134"],"dia":"2026-10-25","serie":{"d0":"2025-10-25","s":[[0,22.84],[20,26.93],[26,24.67],[30,25.0],[33,24.43],[36,21.23],[43,21.72],[50,26.37],[55,26.69],[60,25.34],[64,26.69],[77,25.34],[80,26.69],[108,24.98],[116,24.97],[133,24.98],[160,24.7],[166,22.33],[173,21.02],[180,24.93],[196,23.13],[201,21.01],[203,22.23],[215,21.79],[230,19.67],[243,16.28],[257,12.58],[270,22.89],[278,13.14],[287,8.91],[300,7.0],[306,14.51],[311,10.58],[318,7.71],[324,23.57],[326,6.25],[327,12.58],[331,11.32],[334,10.19],[337,25.36],[346,25.09],[350,9.17],[353,8.25],[355,7.43],[364,6.1]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B09RB5HK4T","t":"18:52","n":"BABOR SOS Calmante ampollas para el rostro con aloe vera y pantenol, 7 x 2 ml","i":"https://m.media-amazon.com/images/I/31xcC3M9AbL.jpg","p":16.84,"b":34.93,"d":52.0,"c":"belleza","u":"https://amzlink.to/az0rbetE3r5zA","mi":"90","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,21.4],[8,26.92],[12,26.5],[23,25.18],[35,26.5],[50,25.84],[52,23.26],[54,20.94],[64,22.01],[71,19.81],[74,17.83],[76,16.67],[84,15.67],[87,14.1],[95,12.9],[103,14.49],[107,13.16],[109,13.68],[110,13.0],[110,13.68],[112,26.5],[120,16.83],[123,15.15],[126,26.5],[133,36.4],[135,43.35],[140,36.9],[140,36.4],[141,36.9],[142,36.4],[143,20.29],[151,31.41],[155,27.93],[155,27.74],[158,24.55],[171,31.41],[223,34.95],[254,34.93],[254,31.41],[341,20.5],[344,21.01],[360,29.37],[363,19.7],[364,17.73]]}};
+const OFERTA = {"a":"B09RB5HK4T","t":"18:52","n":"BABOR SOS Calmante ampollas para el rostro con aloe vera y pantenol, 7 x 2 ml","i":"https://m.media-amazon.com/images/I/31xcC3M9AbL.jpg","p":16.84,"b":34.93,"d":52.0,"c":"belleza","u":"https://amzlink.to/az0rbetE3r5zA","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":17.73,"ba":34.93,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,21.4],[8,26.92],[12,26.5],[23,25.18],[35,26.5],[50,25.84],[52,23.26],[54,20.94],[64,22.01],[71,19.81],[74,17.83],[76,16.67],[84,15.67],[87,14.1],[95,12.9],[103,14.49],[107,13.16],[109,13.68],[110,13.0],[110,13.68],[112,26.5],[120,16.83],[123,15.15],[126,26.5],[133,36.4],[135,43.35],[140,36.9],[140,36.4],[141,36.9],[142,36.4],[143,20.29],[151,31.41],[155,27.93],[155,27.74],[158,24.55],[171,31.41],[223,34.95],[254,34.93],[254,31.41],[341,20.5],[344,21.01],[360,29.37],[363,19.7],[364,17.73]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

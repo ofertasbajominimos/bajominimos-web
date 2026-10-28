@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0D7HXJ8NB","t":"16:51","n":"Tommy Hilfiger Camiseta Mujer Slub Crop V-Neck Manga Corta WW0WW43901 (Pack de 1)","i":"https://m.media-amazon.com/images/I/31+cVvOP0gL.jpg","p":14.0,"b":59.9,"d":77.0,"c":"moda","u":"https://amzlink.to/az04aT5Dxp0YP","m":"Tommy Hilfiger","mi":"90","ta":"XL","ok":1,"tc":"2026-10-27T06:52:03","pa":34.9,"ba":59.9,"av":["Talla: XL"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,33.34],[3,33.25],[10,33.06],[16,32.82],[18,32.88],[24,32.85],[27,33.53],[36,31.44],[41,31.2],[46,29.64],[52,31.09],[60,30.89],[64,30.69],[84,30.05],[92,30.15],[97,24.46],[102,19.81],[105,17.83],[111,14.48],[117,10.56],[118,9.5],[120,10.56],[120,34.7],[121,34.64],[122,34.7],[138,33.6],[153,25.87],[157,23.64],[160,26.42],[169,34.9],[171,26.59],[174,24.83],[177,22.35],[189,59.9],[194,54.51],[195,52.33],[207,59.9],[227,43.12],[234,41.32],[249,34.28],[252,30.85],[261,24.6],[267,39.58],[273,29.77],[273,27.35],[282,28.46],[289,28.13],[294,22.79],[299,24.3],[301,39.94],[304,20.83],[305,19.74],[312,21.38],[317,38.75],[319,21.38],[323,17.32],[326,17.23],[328,16.27],[331,37.74],[333,17.55],[336,23.2],[342,20.88],[346,52.9],[355,19.98],[355,17.98],[360,52.9],[364,14.0]]}};
+const OFERTA = {"a":"B0D7HXJ8NB","t":"16:51","n":"Tommy Hilfiger Camiseta Mujer Slub Crop V-Neck Manga Corta WW0WW43901 (Pack de 1)","i":"https://m.media-amazon.com/images/I/31+cVvOP0gL.jpg","p":14.0,"b":59.9,"d":77.0,"c":"moda","u":"https://amzlink.to/az04aT5Dxp0YP","m":"Tommy Hilfiger","mi":"90","ta":"XL","ok":1,"tc":"2026-10-28T15:52:20","pa":34.9,"ba":59.9,"av":["Talla: XL"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,33.34],[3,33.25],[10,33.06],[16,32.82],[18,32.88],[24,32.85],[27,33.53],[36,31.44],[41,31.2],[46,29.64],[52,31.09],[60,30.89],[64,30.69],[84,30.05],[92,30.15],[97,24.46],[102,19.81],[105,17.83],[111,14.48],[117,10.56],[118,9.5],[120,10.56],[120,34.7],[121,34.64],[122,34.7],[138,33.6],[153,25.87],[157,23.64],[160,26.42],[169,34.9],[171,26.59],[174,24.83],[177,22.35],[189,59.9],[194,54.51],[195,52.33],[207,59.9],[227,43.12],[234,41.32],[249,34.28],[252,30.85],[261,24.6],[267,39.58],[273,29.77],[273,27.35],[282,28.46],[289,28.13],[294,22.79],[299,24.3],[301,39.94],[304,20.83],[305,19.74],[312,21.38],[317,38.75],[319,21.38],[323,17.32],[326,17.23],[328,16.27],[331,37.74],[333,17.55],[336,23.2],[342,20.88],[346,52.9],[355,19.98],[355,17.98],[360,52.9],[364,14.0]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B08C79N6RN","t":"22:17","n":"GlobaLink Luces Navidad Exterior 10M 100 LEDs IP44 Impermeable 8 modos de luz","i":"https://m.media-amazon.com/images/I/51umSZarBuL.jpg","p":17.14,"b":22.99,"d":25.0,"c":"hogar","u":"https://amzlink.to/az0JiHUGdKKyQ","mi":"90","pc":15.42,"ok":1,"tc":"2026-10-27T06:52:03","pa":17.14,"ba":22.99,"av":["Marca el cupón de la página del producto: te queda en 15,42 €"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,19.99],[0,16.14],[7,19.99],[8,18.99],[8,17.09],[21,16.14],[26,15.99],[36,15.33],[41,15.19],[50,15.99],[122,15.81],[125,15.99],[221,23.99],[328,22.79],[333,18.99],[352,18.04],[358,18.99],[364,17.14]]}};
+const OFERTA = {"a":"B08C79N6RN","t":"22:17","n":"GlobaLink Luces Navidad Exterior 10M 100 LEDs IP44 Impermeable 8 modos de luz","i":"https://m.media-amazon.com/images/I/51umSZarBuL.jpg","p":17.14,"b":22.99,"d":25.0,"c":"hogar","u":"https://amzlink.to/az0JiHUGdKKyQ","mi":"90","pc":15.42,"ok":1,"tc":"2026-10-28T15:52:20","pa":17.14,"ba":22.99,"av":["Marca el cupón de la página del producto: te queda en 15,42 €"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,19.99],[0,16.14],[7,19.99],[8,18.99],[8,17.09],[21,16.14],[26,15.99],[36,15.33],[41,15.19],[50,15.99],[122,15.81],[125,15.99],[221,23.99],[328,22.79],[333,18.99],[352,18.04],[358,18.99],[364,17.14]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

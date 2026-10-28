@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DS1VH7V3","t":"13:28","n":"Cabezal de recambio compatible con afeitadoras Series 5 y 6, modelo 53B","i":"https://m.media-amazon.com/images/I/41LyZb1k1UL.jpg","p":12.18,"b":16.99,"d":28.0,"c":"belleza","u":"https://amzlink.to/az0wXBFuJFJa1","mi":"hist","rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,17.99],[7,16.99],[8,17.59],[13,14.99],[13,17.59],[21,14.99],[50,17.59],[91,18.99],[95,20.99],[96,14.99],[96,20.99],[99,22.99],[100,20.99],[102,22.99],[104,21.99],[104,14.99],[105,21.99],[107,19.99],[111,18.99],[121,17.99],[121,18.99],[124,18.49],[161,17.99],[173,18.59],[174,18.99],[176,18.59],[177,18.99],[180,18.59],[182,19.99],[183,18.99],[184,17.99],[192,18.99],[194,17.99],[216,17.59],[243,16.99],[280,16.14],[282,15.99],[288,16.99],[289,15.99],[289,16.99],[300,15.99],[300,16.99],[316,15.19],[317,14.99],[323,16.99],[324,15.99],[330,16.99],[334,14.99],[336,15.99],[348,14.99],[364,12.18]]}};
+const OFERTA = {"a":"B0DS1VH7V3","t":"13:28","n":"Cabezal de recambio compatible con afeitadoras Series 5 y 6, modelo 53B","i":"https://m.media-amazon.com/images/I/41LyZb1k1UL.jpg","p":12.18,"b":16.99,"d":28.0,"c":"belleza","u":"https://amzlink.to/az0wXBFuJFJa1","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":12.18,"ba":16.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-28","serie":{"d0":"2025-10-28","s":[[0,17.99],[7,16.99],[8,17.59],[13,14.99],[13,17.59],[21,14.99],[50,17.59],[91,18.99],[95,20.99],[96,14.99],[96,20.99],[99,22.99],[100,20.99],[102,22.99],[104,21.99],[104,14.99],[105,21.99],[107,19.99],[111,18.99],[121,17.99],[121,18.99],[124,18.49],[161,17.99],[173,18.59],[174,18.99],[176,18.59],[177,18.99],[180,18.59],[182,19.99],[183,18.99],[184,17.99],[192,18.99],[194,17.99],[216,17.59],[243,16.99],[280,16.14],[282,15.99],[288,16.99],[289,15.99],[289,16.99],[300,15.99],[300,16.99],[316,15.19],[317,14.99],[323,16.99],[324,15.99],[330,16.99],[334,14.99],[336,15.99],[348,14.99],[364,12.18]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

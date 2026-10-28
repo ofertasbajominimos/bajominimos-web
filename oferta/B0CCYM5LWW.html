@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0CCYM5LWW","t":"18:55","n":"LTB Jeans Pantalones Vaqueros Fallon para Mujer, Carline Wash 55096, 32W x 34L","i":"https://m.media-amazon.com/images/I/41W+thUOGqL.jpg","p":16.14,"b":33.59,"d":52.0,"c":"moda","u":"https://amzlink.to/az0Snc0hnfRzA","m":"LTB","mi":"hist","ta":"32W/34L","av":["Talla: 32W/34L"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,59.45],[4,52.45],[18,52.57],[23,42.39],[27,55.95],[28,41.93],[32,55.95],[35,52.45],[40,55.95],[45,47.92],[49,55.95],[56,38.45],[58,52.45],[66,35.94],[70,41.95],[79,44.09],[81,45.45],[83,41.93],[86,55.95],[91,41.95],[116,47.29],[128,51.65],[132,48.82],[136,48.73],[137,49.33],[145,50.86],[155,42.53],[158,51.39],[159,49.63],[169,38.74],[178,47.72],[184,46.6],[190,37.81],[196,41.03],[205,36.93],[212,42.24],[226,47.91],[233,45.8],[240,47.54],[243,42.79],[254,39.9],[269,45.93],[279,37.52],[286,40.51],[293,32.81],[298,33.36],[312,39.46],[315,39.61],[320,32.09],[324,41.34],[335,36.55],[338,41.93],[351,27.32],[358,22.13],[359,19.92],[363,16.14]]}};
+const OFERTA = {"a":"B0CCYM5LWW","t":"18:55","n":"LTB Jeans Pantalones Vaqueros Fallon para Mujer, Carline Wash 55096, 32W x 34L","i":"https://m.media-amazon.com/images/I/41W+thUOGqL.jpg","p":16.14,"b":33.59,"d":52.0,"c":"moda","u":"https://amzlink.to/az0Snc0hnfRzA","m":"LTB","mi":"hist","ta":"32W/34L","ok":1,"tc":"2026-10-28T15:52:20","pa":14.53,"av":["Talla: 32W/34L"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,59.45],[4,52.45],[18,52.57],[23,42.39],[27,55.95],[28,41.93],[32,55.95],[35,52.45],[40,55.95],[45,47.92],[49,55.95],[56,38.45],[58,52.45],[66,35.94],[70,41.95],[79,44.09],[81,45.45],[83,41.93],[86,55.95],[91,41.95],[116,47.29],[128,51.65],[132,48.82],[136,48.73],[137,49.33],[145,50.86],[155,42.53],[158,51.39],[159,49.63],[169,38.74],[178,47.72],[184,46.6],[190,37.81],[196,41.03],[205,36.93],[212,42.24],[226,47.91],[233,45.8],[240,47.54],[243,42.79],[254,39.9],[269,45.93],[279,37.52],[286,40.51],[293,32.81],[298,33.36],[312,39.46],[315,39.61],[320,32.09],[324,41.34],[335,36.55],[338,41.93],[351,27.32],[358,22.13],[359,19.92],[363,16.14]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

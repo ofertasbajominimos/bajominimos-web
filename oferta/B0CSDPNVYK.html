@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0CSDPNVYK","t":"16:31","n":"Wrangler Men's W121 Jeans","i":"https://m.media-amazon.com/images/I/41QU1ae-DxL.jpg","p":33.1,"b":79.95,"d":59.0,"c":"moda","u":"https://amzlink.to/az0Kk9KrfogaY","m":"Wrangler","mi":"hist","ta":"30W/30L","ok":1,"tc":"2026-10-27T06:52:03","pa":33.1,"ba":79.95,"av":["Talla: 30W/30L"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,77.95],[2,70.77],[4,72.5],[6,72.51],[6,72.5],[6,77.95],[6,72.51],[6,72.5],[9,77.95],[18,77.03],[21,37.93],[23,70.77],[23,37.93],[23,70.77],[25,70.78],[25,70.77],[25,37.93],[25,70.77],[25,70.78],[26,37.93],[27,70.77],[29,62.99],[29,37.93],[30,70.77],[32,37.93],[32,77.03],[32,70.77],[33,70.78],[33,37.93],[33,70.77],[36,44.98],[44,70.77],[71,44.98],[87,42.73],[92,70.77],[92,71.45],[92,70.77],[92,70.78],[92,44.98],[93,70.77],[94,70.78],[94,70.77],[94,70.78],[94,70.77],[94,71.45],[94,70.77],[94,71.45],[99,70.77],[103,71.45],[118,64.65],[123,72.72],[125,73.81],[136,56.12],[141,71.76],[141,55.97],[148,63.96],[159,71.76],[178,76.68],[178,75.27],[178,75.26],[182,72.83],[185,66.52],[187,63.1],[193,59.38],[195,72.83],[198,72.63],[199,59.9],[200,72.63],[214,75.26],[219,72.63],[220,58.96],[222,72.63],[228,73.62],[246,75.26],[250,73.62],[257,75.26],[260,72.69],[270,71.62],[299,79.95],[300,79.11],[300,75.26],[303,71.62],[306,71.83],[314,72.9],[323,73.82],[326,48.49],[329,73.82],[335,43.64],[337,39.28],[338,36.94],[344,52.51],[346,73.66],[347,73.92],[354,63.96],[359,47.04],[361,42.34],[363,38.11],[364,33.1]]}};
+const OFERTA = {"a":"B0CSDPNVYK","t":"16:31","n":"Wrangler Men's W121 Jeans","i":"https://m.media-amazon.com/images/I/41QU1ae-DxL.jpg","p":33.1,"b":79.95,"d":59.0,"c":"moda","u":"https://amzlink.to/az0Kk9KrfogaY","m":"Wrangler","mi":"hist","ta":"30W/30L","ok":1,"tc":"2026-10-28T15:52:20","pa":33.1,"ba":79.95,"av":["Talla: 30W/30L"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,77.95],[2,70.77],[4,72.5],[6,72.51],[6,72.5],[6,77.95],[6,72.51],[6,72.5],[9,77.95],[18,77.03],[21,37.93],[23,70.77],[23,37.93],[23,70.77],[25,70.78],[25,70.77],[25,37.93],[25,70.77],[25,70.78],[26,37.93],[27,70.77],[29,62.99],[29,37.93],[30,70.77],[32,37.93],[32,77.03],[32,70.77],[33,70.78],[33,37.93],[33,70.77],[36,44.98],[44,70.77],[71,44.98],[87,42.73],[92,70.77],[92,71.45],[92,70.77],[92,70.78],[92,44.98],[93,70.77],[94,70.78],[94,70.77],[94,70.78],[94,70.77],[94,71.45],[94,70.77],[94,71.45],[99,70.77],[103,71.45],[118,64.65],[123,72.72],[125,73.81],[136,56.12],[141,71.76],[141,55.97],[148,63.96],[159,71.76],[178,76.68],[178,75.27],[178,75.26],[182,72.83],[185,66.52],[187,63.1],[193,59.38],[195,72.83],[198,72.63],[199,59.9],[200,72.63],[214,75.26],[219,72.63],[220,58.96],[222,72.63],[228,73.62],[246,75.26],[250,73.62],[257,75.26],[260,72.69],[270,71.62],[299,79.95],[300,79.11],[300,75.26],[303,71.62],[306,71.83],[314,72.9],[323,73.82],[326,48.49],[329,73.82],[335,43.64],[337,39.28],[338,36.94],[344,52.51],[346,73.66],[347,73.92],[354,63.96],[359,47.04],[361,42.34],[363,38.11],[364,33.1]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0CSDXYQ57","t":"16:17","n":"Pack Energy Shot Sabor Limón Drasanvi 12 Unidades de 60 ml","i":"https://m.media-amazon.com/images/I/51ZLPGUOTnL.jpg","p":21.59,"b":41.1,"d":47.0,"c":"belleza","u":"https://amzlink.to/az0Paigtgj6Jo","mi":"hist","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,36.0],[21,25.19],[32,35.1],[33,36.0],[39,29.99],[51,36.0],[110,32.4],[110,36.0],[122,32.99],[122,33.06],[123,33.05],[125,33.03],[127,33.34],[128,33.31],[129,33.24],[133,33.2],[133,33.18],[134,33.17],[134,33.12],[135,33.08],[137,33.07],[141,32.97],[148,32.95],[148,30.59],[163,41.1],[175,37.4],[178,41.1],[186,39.46],[188,41.1],[191,38.28],[193,41.1],[193,29.79],[208,41.1],[211,40.69],[213,40.28],[217,41.1],[222,34.67],[223,36.85],[226,36.87],[227,36.85],[230,35.63],[231,35.55],[231,35.59],[234,35.48],[234,35.51],[235,35.47],[236,35.52],[237,33.11],[238,33.07],[238,28.29],[253,41.1],[289,26.79],[304,41.1],[334,25.39],[349,41.1],[364,23.99]]}};
+const OFERTA = {"a":"B0CSDXYQ57","t":"16:17","n":"Pack Energy Shot Sabor Limón Drasanvi 12 Unidades de 60 ml","i":"https://m.media-amazon.com/images/I/51ZLPGUOTnL.jpg","p":21.59,"b":41.1,"d":47.0,"c":"belleza","u":"https://amzlink.to/az0Paigtgj6Jo","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":23.99,"ba":41.1,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,36.0],[21,25.19],[32,35.1],[33,36.0],[39,29.99],[51,36.0],[110,32.4],[110,36.0],[122,32.99],[122,33.06],[123,33.05],[125,33.03],[127,33.34],[128,33.31],[129,33.24],[133,33.2],[133,33.18],[134,33.17],[134,33.12],[135,33.08],[137,33.07],[141,32.97],[148,32.95],[148,30.59],[163,41.1],[175,37.4],[178,41.1],[186,39.46],[188,41.1],[191,38.28],[193,41.1],[193,29.79],[208,41.1],[211,40.69],[213,40.28],[217,41.1],[222,34.67],[223,36.85],[226,36.87],[227,36.85],[230,35.63],[231,35.55],[231,35.59],[234,35.48],[234,35.51],[235,35.47],[236,35.52],[237,33.11],[238,33.07],[238,28.29],[253,41.1],[289,26.79],[304,41.1],[334,25.39],[349,41.1],[364,23.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

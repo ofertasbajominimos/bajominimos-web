@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0CPPYXW4N","t":"15:09","n":"Geox B GISLI Boy C zapatillas de niño","i":"https://m.media-amazon.com/images/I/31e8fw1d3pL.jpg","p":19.99,"b":49.9,"d":60.0,"c":"moda","u":"https://amzlink.to/az0Zyzwprzh5q","m":"Geox","mi":"hist","pc":17.99,"ta":"23 EU, 25 EU, 26 EU, 27 EU","av":["Tallas al mismo precio: 23 EU, 25 EU, 26 EU, 27 EU","Marca el cupón de la página del producto: te queda en 17,99 €"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,34.99],[15,29.5],[16,34.99],[17,29.5],[26,24.51],[36,27.45],[52,27.44],[69,24.51],[69,24.5],[69,24.49],[71,24.48],[72,24.47],[74,24.46],[75,24.45],[77,22.49],[79,22.48],[102,43.99],[105,22.48],[106,43.99],[120,22.47],[134,21.32],[141,22.47],[155,39.49],[159,34.99],[169,35.99],[174,39.99],[204,46.99],[206,49.18],[250,40.99],[311,47.95],[313,46.99],[323,44.95],[339,48.34],[347,49.0],[356,29.44],[358,30.4],[363,49.0],[364,19.99]]}};
+const OFERTA = {"a":"B0CPPYXW4N","t":"15:09","n":"Geox B GISLI Boy C zapatillas de niño","i":"https://m.media-amazon.com/images/I/31e8fw1d3pL.jpg","p":19.99,"b":49.9,"d":60.0,"c":"moda","u":"https://amzlink.to/az0Zyzwprzh5q","m":"Geox","mi":"hist","pc":17.99,"ta":"23 EU, 25 EU, 26 EU, 27 EU","ok":1,"tc":"2026-10-28T15:52:20","pa":19.99,"ba":49.9,"av":["Tallas al mismo precio: 23 EU, 25 EU, 26 EU, 27 EU","Marca el cupón de la página del producto: te queda en 17,99 €"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,34.99],[15,29.5],[16,34.99],[17,29.5],[26,24.51],[36,27.45],[52,27.44],[69,24.51],[69,24.5],[69,24.49],[71,24.48],[72,24.47],[74,24.46],[75,24.45],[77,22.49],[79,22.48],[102,43.99],[105,22.48],[106,43.99],[120,22.47],[134,21.32],[141,22.47],[155,39.49],[159,34.99],[169,35.99],[174,39.99],[204,46.99],[206,49.18],[250,40.99],[311,47.95],[313,46.99],[323,44.95],[339,48.34],[347,49.0],[356,29.44],[358,30.4],[363,49.0],[364,19.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

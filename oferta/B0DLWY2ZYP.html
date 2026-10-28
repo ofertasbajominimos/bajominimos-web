@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0DLWY2ZYP","t":"21:35","n":"Under Armour UA Rival Core Camiseta de manga corta para mujer","i":"https://m.media-amazon.com/images/I/31e9OijKnoL.jpg","p":13.1,"b":35.0,"d":63.0,"c":"moda","u":"https://amzlink.to/az0XvDVtXkJI4","m":"Under Armour","mi":"hist","ta":"M","ok":1,"tc":"2026-10-27T06:52:03","pa":20.85,"ba":35.0,"av":["Talla: M"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,24.45],[8,29.51],[22,24.5],[39,30.9],[41,29.9],[49,32.64],[50,24.49],[62,24.45],[72,20.95],[90,24.97],[100,20.95],[101,24.97],[110,20.97],[119,24.97],[143,17.5],[164,24.97],[185,24.49],[189,24.97],[211,17.5],[211,24.97],[224,24.49],[228,17.5],[262,24.97],[292,22.47],[294,21.22],[302,21.1],[304,31.5],[324,21.15],[333,15.77],[335,31.5],[337,35.0],[357,15.44],[357,13.9],[357,31.5],[358,13.9],[359,31.5],[364,13.1]]}};
+const OFERTA = {"a":"B0DLWY2ZYP","t":"21:35","n":"Under Armour UA Rival Core Camiseta de manga corta para mujer","i":"https://m.media-amazon.com/images/I/31e9OijKnoL.jpg","p":13.1,"b":35.0,"d":63.0,"c":"moda","u":"https://amzlink.to/az0XvDVtXkJI4","m":"Under Armour","mi":"hist","ta":"M","ok":1,"tc":"2026-10-28T15:52:20","pa":31.5,"ba":35.0,"av":["Talla: M"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,24.45],[8,29.51],[22,24.5],[39,30.9],[41,29.9],[49,32.64],[50,24.49],[62,24.45],[72,20.95],[90,24.97],[100,20.95],[101,24.97],[110,20.97],[119,24.97],[143,17.5],[164,24.97],[185,24.49],[189,24.97],[211,17.5],[211,24.97],[224,24.49],[228,17.5],[262,24.97],[292,22.47],[294,21.22],[302,21.1],[304,31.5],[324,21.15],[333,15.77],[335,31.5],[337,35.0],[357,15.44],[357,13.9],[357,31.5],[358,13.9],[359,31.5],[364,13.1]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

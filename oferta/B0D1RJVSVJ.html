@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0D1RJVSVJ","t":"12:29","n":"Tommy Hilfiger Jersey Mujer Cardi Fine Cuello de Pico","i":"https://m.media-amazon.com/images/I/31o7ILoszML.jpg","p":27.0,"b":99.9,"d":73.0,"c":"moda","u":"https://amzlink.to/az02rNHknDcTS","m":"Tommy Hilfiger","mi":"hist","ta":"XXS","ok":1,"tc":"2026-10-27T06:52:03","pa":84.95,"ba":99.9,"av":["Talla: XXS"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,84.95],[8,99.9],[22,61.75],[28,52.49],[34,99.9],[54,89.95],[59,99.9],[67,61.19],[69,55.07],[71,49.56],[74,44.6],[77,41.09],[86,59.88],[88,54.68],[95,49.21],[97,46.33],[98,42.11],[98,40.7],[111,45.72],[118,47.15],[120,45.5],[131,47.15],[131,79.95],[134,55.97],[137,51.91],[144,79.95],[151,56.76],[161,79.95],[171,74.95],[172,64.95],[185,61.65],[191,64.95],[210,54.95],[226,49.45],[227,44.51],[233,54.95],[245,59.95],[252,41.73],[255,39.7],[258,54.95],[267,66.19],[278,47.66],[286,34.74],[291,31.0],[294,59.95],[297,43.76],[300,59.95],[304,59.35],[307,53.42],[310,43.27],[313,38.94],[317,69.95],[320,35.05],[324,65.65],[327,28.4],[329,69.16],[331,84.95],[333,46.95],[335,74.95],[347,84.95],[351,70.93],[353,52.54],[355,47.29],[359,42.56],[360,38.3],[364,27.0]]}};
+const OFERTA = {"a":"B0D1RJVSVJ","t":"12:29","n":"Tommy Hilfiger Jersey Mujer Cardi Fine Cuello de Pico","i":"https://m.media-amazon.com/images/I/31o7ILoszML.jpg","p":27.0,"b":99.9,"d":73.0,"c":"moda","u":"https://amzlink.to/az02rNHknDcTS","m":"Tommy Hilfiger","mi":"hist","ta":"XXS","ok":1,"tc":"2026-10-28T09:52:16","pa":84.95,"ba":99.9,"av":["Talla: XXS"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,84.95],[8,99.9],[22,61.75],[28,52.49],[34,99.9],[54,89.95],[59,99.9],[67,61.19],[69,55.07],[71,49.56],[74,44.6],[77,41.09],[86,59.88],[88,54.68],[95,49.21],[97,46.33],[98,42.11],[98,40.7],[111,45.72],[118,47.15],[120,45.5],[131,47.15],[131,79.95],[134,55.97],[137,51.91],[144,79.95],[151,56.76],[161,79.95],[171,74.95],[172,64.95],[185,61.65],[191,64.95],[210,54.95],[226,49.45],[227,44.51],[233,54.95],[245,59.95],[252,41.73],[255,39.7],[258,54.95],[267,66.19],[278,47.66],[286,34.74],[291,31.0],[294,59.95],[297,43.76],[300,59.95],[304,59.35],[307,53.42],[310,43.27],[313,38.94],[317,69.95],[320,35.05],[324,65.65],[327,28.4],[329,69.16],[331,84.95],[333,46.95],[335,74.95],[347,84.95],[351,70.93],[353,52.54],[355,47.29],[359,42.56],[360,38.3],[364,27.0]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

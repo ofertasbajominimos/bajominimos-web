@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0BPLYYDWS","t":"18:46","n":"HOMCOM Mesa de Comedor Redonda 90x90x76 cm Marrón y Negro para 2-4 Personas","i":"https://m.media-amazon.com/images/I/410ye9YFGhL.jpg","p":53.11,"b":78.99,"d":33.0,"c":"hogar","u":"https://amzlink.to/az0lax7assvU6","mi":"hist","rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,85.99],[6,89.99],[36,84.99],[51,87.99],[59,90.99],[63,86.99],[83,78.29],[83,86.99],[95,81.99],[133,73.79],[140,81.99],[140,79.99],[142,82.99],[154,86.99],[155,89.99],[167,85.99],[176,70.1],[179,85.99],[190,89.99],[191,93.99],[210,89.99],[220,73.05],[221,89.99],[226,85.99],[243,69.4],[247,85.99],[252,69.39],[257,85.99],[259,82.99],[263,78.99],[266,64.25],[271,78.99],[272,63.19],[279,78.99],[294,67.14],[301,78.99],[304,82.99],[309,85.99],[309,89.99],[316,96.99],[324,75.04],[328,92.99],[337,88.99],[341,58.86],[345,88.99],[347,84.99],[350,78.99],[353,72.99],[363,53.11]]}};
+const OFERTA = {"a":"B0BPLYYDWS","t":"18:46","n":"HOMCOM Mesa de Comedor Redonda 90x90x76 cm Marrón y Negro para 2-4 Personas","i":"https://m.media-amazon.com/images/I/410ye9YFGhL.jpg","p":53.11,"b":78.99,"d":33.0,"c":"hogar","u":"https://amzlink.to/az0lax7assvU6","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":53.11,"ba":78.99,"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,85.99],[6,89.99],[36,84.99],[51,87.99],[59,90.99],[63,86.99],[83,78.29],[83,86.99],[95,81.99],[133,73.79],[140,81.99],[140,79.99],[142,82.99],[154,86.99],[155,89.99],[167,85.99],[176,70.1],[179,85.99],[190,89.99],[191,93.99],[210,89.99],[220,73.05],[221,89.99],[226,85.99],[243,69.4],[247,85.99],[252,69.39],[257,85.99],[259,82.99],[263,78.99],[266,64.25],[271,78.99],[272,63.19],[279,78.99],[294,67.14],[301,78.99],[304,82.99],[309,85.99],[309,89.99],[316,96.99],[324,75.04],[328,92.99],[337,88.99],[341,58.86],[345,88.99],[347,84.99],[350,78.99],[353,72.99],[363,53.11]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0CQJZFGMY","t":"10:20","n":"Altavoz Bluetooth 80W portátil con subwoofer, luces LED y micrófono","i":"https://m.media-amazon.com/images/I/41F9w22yfFL.jpg","p":63.16,"b":79.98,"d":21.0,"c":"tecnologia","u":"https://amzlink.to/az0g7TIOLbPdw","mi":"90","rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,64.98],[4,79.98],[5,69.98],[23,47.49],[29,79.98],[36,47.49],[37,79.98],[39,69.98],[97,79.98],[133,58.67],[134,57.2],[140,79.98],[162,69.98],[191,79.98],[194,72.99],[223,79.98],[225,75.98],[254,79.98],[256,74.98],[275,71.23],[288,79.98],[292,75.98],[306,73.98],[322,79.98],[330,69.98],[344,79.98],[346,75.98],[363,63.16]]}};
+const OFERTA = {"a":"B0CQJZFGMY","t":"10:20","n":"Altavoz Bluetooth 80W portátil con subwoofer, luces LED y micrófono","i":"https://m.media-amazon.com/images/I/41F9w22yfFL.jpg","p":63.16,"b":79.98,"d":21.0,"c":"tecnologia","u":"https://amzlink.to/az0g7TIOLbPdw","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":63.16,"ba":79.98,"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,64.98],[4,79.98],[5,69.98],[23,47.49],[29,79.98],[36,47.49],[37,79.98],[39,69.98],[97,79.98],[133,58.67],[134,57.2],[140,79.98],[162,69.98],[191,79.98],[194,72.99],[223,79.98],[225,75.98],[254,79.98],[256,74.98],[275,71.23],[288,79.98],[292,75.98],[306,73.98],[322,79.98],[330,69.98],[344,79.98],[346,75.98],[363,63.16]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

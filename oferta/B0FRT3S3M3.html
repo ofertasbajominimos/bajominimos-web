@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0FRT3S3M3","t":"15:38","n":"Old Spice Captain Desodorante Spray Hombre Sin Aluminio, Pack 6x150ml","i":"https://m.media-amazon.com/images/I/51ki4BdvOSL.jpg","p":15.19,"b":24.42,"d":38.0,"c":"belleza","u":"https://amzlink.to/az0DlYAflsZIA","mi":"hist","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,24.42],[34,23.98],[35,23.99],[37,24.42],[89,18.49],[103,24.42],[109,23.2],[110,24.42],[140,16.11],[147,27.97],[148,16.11],[154,23.7],[156,24.42],[198,15.99],[211,24.42],[244,15.99],[250,25.97],[254,15.99],[258,24.42],[306,25.97],[311,15.99],[315,25.97],[323,15.99],[325,21.79],[325,25.08],[329,25.97],[344,25.22],[344,23.9],[364,15.99]]}};
+const OFERTA = {"a":"B0FRT3S3M3","t":"15:38","n":"Old Spice Captain Desodorante Spray Hombre Sin Aluminio, Pack 6x150ml","i":"https://m.media-amazon.com/images/I/51ki4BdvOSL.jpg","p":15.19,"b":24.42,"d":38.0,"c":"belleza","u":"https://amzlink.to/az0DlYAflsZIA","mi":"hist","ok":1,"tc":"2026-10-28T15:52:20","pa":15.99,"ba":24.42,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,24.42],[34,23.98],[35,23.99],[37,24.42],[89,18.49],[103,24.42],[109,23.2],[110,24.42],[140,16.11],[147,27.97],[148,16.11],[154,23.7],[156,24.42],[198,15.99],[211,24.42],[244,15.99],[250,25.97],[254,15.99],[258,24.42],[306,25.97],[311,15.99],[315,25.97],[323,15.99],[325,21.79],[325,25.08],[329,25.97],[344,25.22],[344,23.9],[364,15.99]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

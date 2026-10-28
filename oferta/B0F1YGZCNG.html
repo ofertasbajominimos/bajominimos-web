@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0F1YGZCNG","t":"19:37","n":"Morosil Siluet 360 Quemagrasas Naranja Roja Sicilia 30 Comp Sin Gluten","i":"https://m.media-amazon.com/images/I/41WLgvbztlL.jpg","p":9.62,"b":16.65,"d":42.0,"c":"belleza","u":"https://amzlink.to/az0f7i07p682f","mi":"90","av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,13.6],[2,13.61],[2,13.64],[5,13.62],[8,13.58],[11,13.59],[16,13.88],[20,13.87],[22,13.8],[29,13.56],[31,13.55],[37,13.54],[43,13.53],[46,13.52],[48,13.51],[51,13.5],[58,13.56],[59,13.57],[67,14.58],[71,13.92],[75,13.93],[78,13.58],[79,13.57],[80,13.59],[84,14.01],[88,14.02],[90,13.6],[102,9.44],[109,14.95],[109,13.45],[110,14.95],[115,13.68],[117,13.87],[119,13.88],[120,13.86],[121,13.87],[122,13.88],[123,13.9],[124,13.91],[124,14.74],[125,14.78],[127,14.79],[129,16.65],[146,14.97],[147,14.95],[148,15.26],[151,16.65],[153,16.16],[156,16.19],[157,16.2],[160,16.65],[167,15.98],[170,16.04],[170,16.06],[171,16.07],[174,16.39],[176,16.41],[178,13.99],[193,15.65],[193,16.65],[202,16.56],[205,16.5],[205,16.49],[209,16.38],[209,16.35],[211,15.73],[213,15.66],[213,15.68],[215,15.67],[215,15.62],[217,15.57],[218,15.56],[220,15.64],[220,15.62],[222,16.65],[223,13.59],[223,13.19],[238,12.49],[254,16.65],[275,11.99],[289,16.65],[321,11.29],[335,16.65],[363,16.49],[364,10.69]]}};
+const OFERTA = {"a":"B0F1YGZCNG","t":"19:37","n":"Morosil Siluet 360 Quemagrasas Naranja Roja Sicilia 30 Comp Sin Gluten","i":"https://m.media-amazon.com/images/I/41WLgvbztlL.jpg","p":9.62,"b":16.65,"d":42.0,"c":"belleza","u":"https://amzlink.to/az0f7i07p682f","mi":"90","ok":1,"tc":"2026-10-28T15:52:20","pa":10.69,"ba":16.65,"av":["Activa «Suscríbete y ahorra» para tener este precio (puedes cancelarlo después)"],"rs":["PRECIO MÁS BAJO EN 3 MESES"],"dia":"2026-10-27","serie":{"d0":"2025-10-27","s":[[0,13.6],[2,13.61],[2,13.64],[5,13.62],[8,13.58],[11,13.59],[16,13.88],[20,13.87],[22,13.8],[29,13.56],[31,13.55],[37,13.54],[43,13.53],[46,13.52],[48,13.51],[51,13.5],[58,13.56],[59,13.57],[67,14.58],[71,13.92],[75,13.93],[78,13.58],[79,13.57],[80,13.59],[84,14.01],[88,14.02],[90,13.6],[102,9.44],[109,14.95],[109,13.45],[110,14.95],[115,13.68],[117,13.87],[119,13.88],[120,13.86],[121,13.87],[122,13.88],[123,13.9],[124,13.91],[124,14.74],[125,14.78],[127,14.79],[129,16.65],[146,14.97],[147,14.95],[148,15.26],[151,16.65],[153,16.16],[156,16.19],[157,16.2],[160,16.65],[167,15.98],[170,16.04],[170,16.06],[171,16.07],[174,16.39],[176,16.41],[178,13.99],[193,15.65],[193,16.65],[202,16.56],[205,16.5],[205,16.49],[209,16.38],[209,16.35],[211,15.73],[213,15.66],[213,15.68],[215,15.67],[215,15.62],[217,15.57],[218,15.56],[220,15.64],[220,15.62],[222,16.65],[223,13.59],[223,13.19],[238,12.49],[254,16.65],[275,11.99],[289,16.65],[321,11.29],[335,16.65],[363,16.49],[364,10.69]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);

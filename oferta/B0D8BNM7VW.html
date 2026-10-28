@@ -70,7 +70,7 @@
 </div></footer>
 
 <script>
-const OFERTA = {"a":"B0D8BNM7VW","t":"15:27","n":"Högert Technik HT5K950-S Camisa de trabajo amarilla, talla S, para hombre","i":"https://m.media-amazon.com/images/I/31EpHevivXL.jpg","p":5.5,"b":12.77,"d":57.0,"c":"moda","u":"https://amzlink.to/az00BFG1aIf6p","mi":"hist","ta":"S","ok":1,"tc":"2026-10-27T06:52:03","pa":5.5,"ba":12.77,"av":["Talla: S"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,12.77],[115,11.49],[119,10.88],[130,11.49],[130,12.77],[261,12.72],[269,12.7],[273,12.77],[308,12.15],[323,12.77],[333,10.34],[337,8.38],[340,7.54],[345,7.4],[348,7.53],[352,6.78],[357,6.26],[364,7.02],[364,5.5]]}};
+const OFERTA = {"a":"B0D8BNM7VW","t":"15:27","n":"Högert Technik HT5K950-S Camisa de trabajo amarilla, talla S, para hombre","i":"https://m.media-amazon.com/images/I/31EpHevivXL.jpg","p":5.5,"b":12.77,"d":57.0,"c":"moda","u":"https://amzlink.to/az00BFG1aIf6p","mi":"hist","ta":"S","ok":1,"tc":"2026-10-28T12:52:21","pa":5.5,"ba":12.77,"av":["Talla: S"],"rs":["MÍNIMO HISTÓRICO"],"dia":"2026-10-26","serie":{"d0":"2025-10-26","s":[[0,12.77],[115,11.49],[119,10.88],[130,11.49],[130,12.77],[261,12.72],[269,12.7],[273,12.77],[308,12.15],[323,12.77],[333,10.34],[337,8.38],[340,7.54],[345,7.4],[348,7.53],[352,6.78],[357,6.26],[364,7.02],[364,5.5]]}};
 const COLAS = {"moda":"Moda","hogar":"Hogar y limpieza","belleza":"Belleza y salud","tecnologia":"Tecnología","deporte":"Deporte","otros":"Otros","alimentacion":"Alimentación"};
 const $ = id => document.getElementById(id);
 const euros = n => n == null ? "" : n.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
@@ -85,10 +85,11 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const cambio = x => x.pa != null && x.p != null && Math.abs(x.pa - x.p) > 0.01;
-const precioAhora = x => x.pa != null ? x.pa : x.p;
+const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
+const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
+const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
 const agotada = x => x.ok === 0;
-const subio = x => cambio(x) && x.pa > x.p * 1.02;
+const subio = x => cambio(x) && x.pa > base(x) * 1.02;
 function pct(x) {
   const ref = cambio(x) ? (x.ba || x.b) : x.b;
   if (cambio(x)) return ref && ref > x.pa ? Math.round((1 - x.pa / ref) * 100) : 0;
@@ -108,7 +109,7 @@ function pintarFicha() {
   const ref = cam ? (o.ba || o.b) : o.b;
   $("f-antes").textContent = ref && ref > ahora ? euros(ref) : "";
   $("f-ahorras").textContent = ref && ref > ahora ? "Ahorras " + euros(ref - ahora) : "";
-  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < o.p * 0.98);
+  const e = $("f-estado"); e.hidden = !termin && !(cam && o.pa < base(o) * 0.98);
   e.className = "estado" + (agotada(o) ? "" : subio(o) ? " sube" : " baja");
   e.textContent = agotada(o) ? "AGOTADA" : subio(o) ? "OFERTA TERMINADA · HA SUBIDO" : "HA BAJADO DE PRECIO";
   document.querySelector(".ficha-foto").classList.toggle("terminada", termin);
