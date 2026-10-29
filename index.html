@@ -166,7 +166,8 @@ footer p{margin:0 0 8px;max-width:820px}
 
   <section class="ultimas" id="ultimas">
     <h2>Últimas ofertas publicadas</h2>
-    <ul><li><a href="oferta/B0GXFKJK7H.html">Tablet 10 pulgadas Android 12GB RAM 128GB 5G WiFi con funda, ratón y teclado, verde</a> <span>82,99 €</span></li>
+    <ul><li><a href="oferta/B0G3PGW3SL.html">KIMMOO ventilador de mano turbo con enfriador, 21000 RPM, 199 velocidades, recargable</a> <span>18,99 €</span></li>
+<li><a href="oferta/B0GXFKJK7H.html">Tablet 10 pulgadas Android 12GB RAM 128GB 5G WiFi con funda, ratón y teclado, verde</a> <span>82,99 €</span></li>
 <li><a href="oferta/B083PKF7PH.html">Element Black Gum zapatillas para hombre</a> <span>30,10 €</span></li>
 <li><a href="oferta/B0FDH1BBCK.html">Monster High muñeca Clawdeen Wolf con cachorro lobo Luna y 7 accesorios</a> <span>18,31 €</span></li>
 <li><a href="oferta/B0FB47Z4TG.html">Vans Atwood Deluxe zapatillas unisex adulto, estilo retro para uso diario</a> <span>53,44 €</span></li>
@@ -284,8 +285,7 @@ footer p{margin:0 0 8px;max-width:820px}
 <li><a href="oferta/B0DGGC6M8C.html">Pantene Pro-V Repara y Protege champú 1 L + acondicionador 800 ml para pelo dañado</a> <span>15,19 €</span></li>
 <li><a href="oferta/B00XVN7T70.html">Tristar tostadora de 2 rebanadas con soporte para panecillos, 800 W</a> <span>14,01 €</span></li>
 <li><a href="oferta/B0FJ8WKHRK.html">G-Star Foundation chaleco liner para hombre, pack de 1</a> <span>58,84 €</span></li>
-<li><a href="oferta/B08N6GLJ25.html">Trident Max chicles sabor melocotón y sandía sin azúcar, pack de 12 uds</a> <span>5,52 €</span></li>
-<li><a href="oferta/B07SG59B3H.html">Compeed Anti-Blister Stick, barra anti-ampollas para pies</a> <span>6,34 €</span></li></ul>
+<li><a href="oferta/B08N6GLJ25.html">Trident Max chicles sabor melocotón y sandía sin azúcar, pack de 12 uds</a> <span>5,52 €</span></li></ul>
   </section>
 
   <section class="cta">
@@ -327,6 +327,11 @@ let cola = "todas";
 
 // Precio de lista al publicar (pk): con "ahorro al tramitar el pedido" el precio publicado ya lleva ese descuento y es menor que el de la ficha de
 // Amazon, que es el que se comprueba después (la API no ve el descuento del pago): se compara con el de lista, no con el publicado
+// Enlace de la tienda: el de la web (o.w, con su ID de seguimiento) salvo que se llegue desde un mensaje de Telegram (?ref=telegram, que se
+// recuerda durante la visita): entonces el de Telegram (o.u). Sin o.w (TAG_WEB vacío), siempre o.u.
+const vieneDeTelegram = (() => { try { if (new URLSearchParams(location.search).get("ref") === "telegram") sessionStorage.setItem("ref", "telegram");
+  return sessionStorage.getItem("ref") === "telegram"; } catch (e) { return false; } })();
+const enlaceTienda = o => (vieneDeTelegram ? o.u : (o.w || o.u));
 const base = o => o.pk != null ? o.pk : o.p;
 const cambio = o => o.pa != null && base(o) != null && Math.abs(o.pa - base(o)) > 0.01;      // el precio de ahora no es el de publicar
 const precioAhora = o => (o.pa != null && cambio(o)) ? o.pa : o.p;
@@ -389,7 +394,7 @@ function tarjeta(o) {
       <div class="precios"><span class="ahora">${euros(precioAhora(o))}</span>${(o.ba || o.b) && (o.ba || o.b) > precioAhora(o) ? `<span class="antes">${euros(o.ba || o.b)}</span>` : ""}</div>
       ${avisos.join("")}
       <div class="comprobado">${nota}</div>
-      <div class="pie"><span class="hora">Publicada ${cuando}</span><a class="ver" href="${esc(o.u)}" data-a="${esc(o.a)}" data-n="${esc(o.n)}" target="_blank" rel="sponsored noopener">${terminada(o) ? "Ver en Amazon" : "Ver oferta"}</a></div>
+      <div class="pie"><span class="hora">Publicada ${cuando}</span><a class="ver" href="${esc(enlaceTienda(o))}" data-a="${esc(o.a)}" data-n="${esc(o.n)}" target="_blank" rel="sponsored noopener">${terminada(o) ? "Ver en Amazon" : "Ver oferta"}</a></div>
     </div></article>`;
 }
 
