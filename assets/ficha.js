@@ -28,7 +28,7 @@ function cuandoTxt(iso) {
 
 function pintarFicha() {
   const p = pct(o), ahora = precioAhora(o), cam = cambio(o), termin = agotada(o) || subio(o);
-  $("f-img").src = o.i || ""; $("f-titulo").textContent = o.n;
+  $("f-img").src = o.i || ""; $("f-titulo").textContent = o.tf || o.n;
   $("f-cola").textContent = COLAS[o.c] || "Otros"; $("f-marca").textContent = o.m || "";
   $("f-dto").textContent = p >= 5 && !termin ? "-" + p + "%" : ""; $("f-dto").hidden = !(p >= 5 && !termin);
   $("f-ahora").textContent = euros(ahora);
