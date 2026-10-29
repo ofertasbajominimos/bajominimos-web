@@ -97,6 +97,14 @@ footer p{margin:0 0 8px;max-width:820px}
   .hero p{font-size:15px}.hero{padding-bottom:6px}.aviso{font-size:12px}.pie{flex-wrap:wrap}.ver{padding:8px 12px}}
 @media(max-width:340px){.rejilla{grid-template-columns:1fr}}
 
+.seo-resumen{color:var(--suave);font-size:14px;margin:10px 0 0;line-height:1.5}
+.ultimas{margin:34px 0 10px}
+.ultimas h2{font-size:18px;margin:0 0 12px}
+.ultimas ul{list-style:none;padding:0;margin:0;columns:2 340px;column-gap:28px}
+.ultimas li{break-inside:avoid;padding:5px 0;border-bottom:1px solid var(--linea);font-size:14px}
+.ultimas li a{color:var(--texto);text-decoration:none}
+.ultimas li a:hover{text-decoration:underline}
+.ultimas li span{color:var(--suave);white-space:nowrap;margin-left:6px}
 .volver{display:inline-block;margin:18px 0 12px;color:var(--suave);font-weight:600}
 .volver:hover{color:var(--azul2)}
 .ficha{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:28px;align-items:start;padding:6px 0 22px}
