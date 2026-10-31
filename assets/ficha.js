@@ -149,12 +149,30 @@ $("f-compartir").onclick = async () => {
   try { await navigator.clipboard.writeText(url); $("f-compartir").textContent = "Enlace copiado"; setTimeout(() => $("f-compartir").textContent = "Compartir", 2000); } catch (e) {}
 };
 
+const SIN_PESO = new Set(["para", "con", "sin", "hombre", "mujer", "unisex", "pack", "paquete", "negro", "blanco", "azul", "rojo", "verde", "gris", "color", "colores", "talla", "tallas", "edicion", "nuevo", "nueva", "original", "juego", "set", "unidades", "pulgadas"]);
+const CATEGORIAS_PAGINA = ["moda", "hogar", "belleza", "tecnologia", "deporte", "alimentacion"];
+const norma = t => (t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const palabras = t => new Set(norma(t).split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !/^\d+$/.test(w) && !SIN_PESO.has(w)));
+function parecida(x, marca, pal) {
+  if (marca && norma(x.m).trim() === marca) return true;
+  let comunes = 0;
+  for (const w of palabras(x.n)) if (pal.has(w) && ++comunes >= 2) return true;
+  return false;
+}
 function relacionadas() {
-  const lista = Object.values(dias).flat().filter(x => x.c === o.c && x.a !== o.a && x.ok !== 0 && !(x.pa != null && x.pa > x.p * 1.02));
+  const marca = norma(o.m).trim(), pal = palabras(o.n);
+  const lista = Object.values(dias).flat().filter(x => x.c === o.c && x.a !== o.a && x.ok !== 0 && !(x.pa != null && x.pa > x.p * 1.02) && parecida(x, marca, pal));
   lista.sort((a, b) => (b.dia + b.t).localeCompare(a.dia + a.t));
   const vistos = new Set(), top = [];
   for (const x of lista) { if (!vistos.has(x.a) && top.length < 4) { vistos.add(x.a); top.push(x); } }
-  if (!top.length) return;
+  if (!top.length) {
+    if (CATEGORIAS_PAGINA.includes(o.c) && COLAS[o.c]) {
+      $("rel-titulo").hidden = true;
+      $("relacionadas").innerHTML = `<p class="rel-mas"><a href="../categoria/${o.c}.html">Ver más ofertas de ${esc(COLAS[o.c])}</a></p>`;
+      $("relacionadas-sec").hidden = false;
+    }
+    return;
+  }
   $("relacionadas").innerHTML = top.map(x => {
     const p = x.d ? Math.round(x.d) : (x.b && x.p && x.b > x.p ? Math.round((1 - x.p / x.b) * 100) : 0), ahora = precioAhora(x);
     return `<article class="tarjeta"><a class="foto" href="${esc(x.a)}.html">${x.i ? `<img loading="lazy" src="${esc(x.i)}" alt="" referrerpolicy="no-referrer">` : ""}${p >= 5 ? `<span class="dto">-${p}%</span>` : ""}</a>

@@ -138,6 +138,7 @@ details.ultimas ul{margin-top:10px}
 .panel-cab{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .panel h2,.rel-titulo{margin:0;font-size:20px}
 .rel-titulo{margin:6px 0 4px}
+.rel-mas{margin:6px 0;grid-column:1/-1}.rel-mas a{font-weight:700;color:var(--azul,#2a5cff);text-decoration:none}.rel-mas a:hover{text-decoration:underline}
 .rangos{display:flex;gap:8px}
 .resumen{margin:10px 0 6px;color:var(--suave)}
 .grafica{position:relative;margin-top:6px}
