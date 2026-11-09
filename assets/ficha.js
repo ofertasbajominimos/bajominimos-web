@@ -150,7 +150,7 @@ $("f-compartir").onclick = async () => {
 };
 
 const SIN_PESO = new Set(["para", "con", "sin", "hombre", "mujer", "unisex", "pack", "paquete", "negro", "blanco", "azul", "rojo", "verde", "gris", "color", "colores", "talla", "tallas", "edicion", "nuevo", "nueva", "original", "juego", "set", "unidades", "pulgadas"]);
-const CATEGORIAS_PAGINA = ["moda", "hogar", "belleza", "tecnologia", "deporte", "alimentacion"];
+const CATEGORIAS_PAGINA = ["moda", "hogar", "belleza", "tecnologia", "deporte", "alimentacion", "juguetes"];
 const norma = t => (t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const palabras = t => new Set(norma(t).split(/[^a-z0-9]+/).filter(w => w.length >= 4 && !/^\d+$/.test(w) && !SIN_PESO.has(w)));
 function parecida(x, marca, pal) {
