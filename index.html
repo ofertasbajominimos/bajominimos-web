@@ -333,11 +333,10 @@ let cola = "todas";
 
 // Precio de lista al publicar (pk): con "ahorro al tramitar el pedido" el precio publicado ya lleva ese descuento y es menor que el de la ficha de
 // Amazon, que es el que se comprueba después (la API no ve el descuento del pago): se compara con el de lista, no con el publicado
-// Enlace de la tienda: el de la web (o.w, con su ID de seguimiento) salvo que se llegue desde un mensaje de Telegram (?ref=telegram, que se
-// recuerda durante la visita): entonces el de Telegram (o.u). Sin o.w (TAG_WEB vacío), siempre o.u.
-const vieneDeTelegram = (() => { try { if (new URLSearchParams(location.search).get("ref") === "telegram") sessionStorage.setItem("ref", "telegram");
-  return sessionStorage.getItem("ref") === "telegram"; } catch (e) { return false; } })();
-const enlaceTienda = o => (vieneDeTelegram ? o.u : (o.w || o.u));
+// Enlace de la tienda: siempre el de la web (o.w, con su propio ID de seguimiento), venga la visita de donde venga
+// (antes, si se llegaba desde un mensaje de Telegram con ?ref=telegram, se usaba el ID de Telegram; 20/11/2026: ya no).
+// Sin o.w (TAG_WEB vacío), se usa o.u.
+const enlaceTienda = o => (o.w || o.u);
 const base = o => o.pk != null ? o.pk : o.p;
 const cambio = o => o.pa != null && base(o) != null && Math.abs(o.pa - base(o)) > 0.01;      // el precio de ahora no es el de publicar
 const precioAhora = o => (o.pa != null && cambio(o)) ? o.pa : o.p;
