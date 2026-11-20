@@ -11,9 +11,7 @@ function tema(t) { document.documentElement.dataset.tema = t; try { localStorage
   tema(t || (matchMedia("(prefers-color-scheme: light)").matches ? "claro" : "oscuro"));
   $("tema").onclick = () => tema(document.documentElement.dataset.tema === "oscuro" ? "claro" : "oscuro"); })();
 
-const vieneDeTelegram = (() => { try { if (new URLSearchParams(location.search).get("ref") === "telegram") sessionStorage.setItem("ref", "telegram");
-  return sessionStorage.getItem("ref") === "telegram"; } catch (e) { return false; } })();
-const enlaceTienda = x => (vieneDeTelegram ? x.u : (x.w || x.u));          // ver la web principal
+const enlaceTienda = x => (x.w || x.u);          // siempre el ID propio de la web (ver la web principal)
 const base = x => x.pk != null ? x.pk : x.p;          // precio de lista al publicar (ver la web principal)
 const cambio = x => x.pa != null && base(x) != null && Math.abs(x.pa - base(x)) > 0.01;
 const precioAhora = x => (x.pa != null && cambio(x)) ? x.pa : x.p;
